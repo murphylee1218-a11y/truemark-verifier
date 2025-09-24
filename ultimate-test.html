@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>终极验证测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: #333; }
+        h2 { color: #555; margin-top: 30px; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #45a049; }
+        input { padding: 10px; width: 100%; box-sizing: border-box; margin-top: 10px; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        pre { white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>终极验证测试</h1>
+        <p>这个页面只包含最基本的验证逻辑，用于确认API连接问题。</p>
+        
+        <h2>步骤1: 输入验证码</h2>
+        <input type="text" id="verification-code" placeholder="请输入验证码" value="8CD6CE1EE181">
+        
+        <h2>步骤2: 点击验证按钮</h2>
+        <button id="verify-button">验证</button>
+        
+        <h2>结果</h2>
+        <div id="result" class="result">
+            <pre id="result-text">等待验证...</pre>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const verifyButton = document.getElementById('verify-button');
+            const verificationCodeInput = document.getElementById('verification-code');
+            const resultText = document.getElementById('result-text');
+            const resultDiv = document.getElementById('result');
+            
+            verifyButton.addEventListener('click', function() {
+                const code = verificationCodeInput.value.trim();
+                if (!code) {
+                    showResult('请输入验证码', 'error');
+                    return;
+                }
+                
+                showResult('正在验证...', '');
+                
+                // 最基本的fetch请求，不添加任何额外的设置
+                fetch('/api/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ verification_code: code })
+                })
+                .then(response => {
+                    console.log('响应状态码:', response.status);
+                    
+                    // 检查响应是否成功
+                    if (!response.ok) {
+                        throw new Error(`HTTP错误! 状态码: ${response.status}`);
+                    }
+                    
+                    // 获取响应文本
+                    return response.text();
+                })
+                .then(text => {
+                    console.log('原始响应文本:', text);
+                    
+                    // 尝试解析JSON
+                    try {
+                        const data = JSON.parse(text);
+                        console.log('解析后的JSON:', data);
+                        
+                        if (data.valid) {
+                            showResult(`验证成功!\n\n响应数据:\n${JSON.stringify(data, null, 2)}`, 'success');
+                        } else {
+                            showResult(`验证失败!\n\n响应数据:\n${JSON.stringify(data, null, 2)}`, 'error');
+                        }
+                    } catch (jsonError) {
+                        console.error('JSON解析错误:', jsonError);
+                        showResult(`验证失败：响应解析错误\n\n原始响应:\n${text}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('网络请求错误:', error);
+                    showResult(`验证失败：网络请求错误\n\n错误信息:\n${error.message}`, 'error');
+                });
+            });
+            
+            function showResult(text, type) {
+                resultText.textContent = text;
+                resultDiv.className = 'result';
+                if (type) {
+                    resultDiv.classList.add(type);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

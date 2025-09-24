@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>印绩 - 登录</title>
+    <style>
+        /* 全局样式 - 设置基础盒模型、字体和页面背景 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+        }
+        
+        /* 登录容器样式 */
+        .login-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        
+        /* 标题样式 */
+        .logo {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h3 {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            font-weight: normal;
+            text-align: center;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 按钮样式 */
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background-color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 注册链接样式 */
+        .register-link {
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 错误消息样式 */
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        /* 加载状态样式 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* 加载状态样式 - 设置加载动画的样式 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 加载覆盖层 - 用于在异步操作期间显示加载状态 */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            z-index: 10;
+        }
+        
+        .loading-container {
+            position: relative;
+        }
+        
+        /* 成功结果中的详细信息样式 - 设置验证成功时显示的详细信息样式 */
+        .result-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-detail-item {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .result-detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <!-- 页面标题 -->
+    <h1>印绩</h1>
+    
+    <!-- 登录容器 -->
+    <div class="login-container">
+        <!-- 错误消息区域 -->
+        <div id="error-message" class="error-message"></div>
+        
+        <!-- 登录表单 -->
+        <div class="form-group">
+            <label for="company-id">企业ID</label>
+            <input type="text" id="company-id" placeholder="请输入您的企业ID">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" placeholder="请输入您的密码">
+        </div>
+        
+        <button id="login-btn" class="btn-primary">
+            <span class="loading-spinner" style="display: none;"></span>
+            企业登录
+        </button>
+        
+        <!-- 注册链接 -->
+        <div class="register-link">
+            还没有账号？<a href="register.html" id="register-link">立即注册</a>
+        </div>
+    </div>
+    
+    <script>
+        // 获取页面元素
+        const loginBtn = document.getElementById('login-btn');
+        const companyIdInput = document.getElementById('company-id');
+        const passwordInput = document.getElementById('password');
+        const errorMessageDiv = document.getElementById('error-message');
+        const registerLink = document.getElementById('register-link');
+        const loadingSpinner = loginBtn.querySelector('.loading-spinner');
+        
+        /**
+         * 显示错误消息
+         * @param {string} message - 错误消息内容
+         */
+        function showError(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.style.display = 'block';
+            
+            // 5秒后自动隐藏错误消息
+            setTimeout(() => {
+                errorMessageDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        /**
+         * 设置按钮加载状态
+         * @param {boolean} isLoading - 是否为加载状态
+         */
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                loadingSpinner.style.display = 'inline-block';
+                loginBtn.disabled = true;
+            } else {
+                loadingSpinner.style.display = 'none';
+                loginBtn.disabled = false;
+            }
+        }
+        
+        /**
+         * 处理登录请求
+         */
+        async function handleLogin() {
+            const companyId = companyIdInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            // 简单的输入验证
+            if (!companyId || !password) {
+                showError('请输入企业ID和密码');
+                return;
+            }
+            
+            // 隐藏之前的错误消息
+            errorMessageDiv.style.display = 'none';
+            
+            // 设置按钮为加载状态
+            setLoadingState(true);
+            
+            try {
+                // 发送登录请求到后端API
+                console.log('准备发送登录请求:', { companyId, password, url: 'http://localhost:3000/api/auth/login' });
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ companyId, password })
+                });
+                
+                console.log('登录请求响应状态:', response.status);
+                
+                // 检查响应头
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                    headers[key] = value;
+                });
+                console.log('登录请求响应头部:', headers);
+                
+                // 尝试解析JSON响应
+                try {
+                    const data = await response.json();
+                    console.log('登录请求响应数据:', data);
+                    
+                    if (response.ok && data.accessToken) {
+                        // 登录成功，保存token和用户信息到localStorage
+                        localStorage.setItem('authToken', data.accessToken);
+                        localStorage.setItem('userInfo', JSON.stringify(data.user));
+                        
+                        // 跳转到发行方管理系统页面
+                        window.location.href = 'issuer.html';
+                    } else {
+                        // 登录失败，显示错误消息
+                        showError(data.message || '登录失败，请检查您的企业ID和密码');
+                    }
+                } catch (jsonError) {
+                    console.error('解析登录响应JSON时出错:', jsonError);
+                    // 尝试获取原始响应文本进行调试
+                    try {
+                        const text = await response.text();
+                        console.log('原始响应文本:', text);
+                        showError('服务器响应格式错误，请稍后重试');
+                    } catch (textError) {
+                        console.error('无法获取原始响应文本:', textError);
+                        showError('服务器响应格式错误，请稍后重试');
+                    }
+                }
+            } catch (error) {
+                console.error('登录过程中发生错误:', error);
+                // 显示更详细的错误信息，帮助诊断问题
+                if (error.message.includes('Failed to fetch')) {
+                    showError('无法连接到服务器，请检查网络连接和服务器状态');
+                } else if (error.message.includes('CORS')) {
+                    showError('跨域请求被阻止，请检查服务器CORS配置');
+                } else {
+                    showError('登录失败，请稍后重试');
+                }
+            } finally {
+                // 恢复按钮状态
+                setLoadingState(false);
+            }
+        }
+        
+        // 绑定登录按钮点击事件
+        loginBtn.addEventListener('click', handleLogin);
+        
+        // 为密码输入框添加回车事件
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+        
+        // 检查是否已登录，如果已登录则直接跳转到发行方管理页面
+        document.addEventListener('DOMContentLoaded', function() {
+            const authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                window.location.href = 'issuer.html';
+            }
+        });
+    </script>
+</body>
+</html>

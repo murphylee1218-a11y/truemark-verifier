@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极简验证测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        input, button { padding: 10px; margin: 10px 0; width: 100%; box-sizing: border-box; }
+        button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        pre { background-color: #f0f0f0; padding: 15px; border-radius: 5px; white-space: pre-wrap; }
+        .logs { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>极简验证测试</h1>
+        
+        <h3>步骤1: 创建测试凭证</h3>
+        <button id="create-credential">创建测试凭证</button>
+        
+        <h3>步骤2: 输入验证码进行验证</h3>
+        <input type="text" id="verification-code" placeholder="输入验证码">
+        <button id="verify-code">验证</button>
+        
+        <div class="logs">
+            <h3>日志输出:</h3>
+            <pre id="logs"></pre>
+        </div>
+    </div>
+
+    <script>
+        const logsElement = document.getElementById('logs');
+        const verificationCodeInput = document.getElementById('verification-code');
+        
+        // 记录日志函数
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logsElement.textContent += `[${timestamp}] ${message}\n`;
+            logsElement.scrollTop = logsElement.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        // 获取测试用的JWT令牌
+        function getTestToken() {
+            return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOiJURVNUMDAxIiwiY29tcGFueU5hbWUiOiLmtYvor5Xnp5HmioDmnInpmZDlhazlj7giLCJjb21wYW55V2Vic2l0ZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20iLCJjb250YWN0RW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNzU4NzAyOTIzLCJleHAiOjE3NTg3MDY1MjN9._BmzWQ3icCvp53F4cFUZNlXbCFYr7jenqlOJ90jw8ao';
+        }
+        
+        // 创建测试凭证
+        document.getElementById('create-credential').addEventListener('click', async function() {
+            try {
+                log('开始创建测试凭证...');
+                const response = await fetch('/api/credentials', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getTestToken()
+                    },
+                    body: JSON.stringify({
+                        employeeName: '测试员工',
+                        jobTitle: '测试工程师',
+                        startDate: '2023-01-01',
+                        endDate: ''
+                    })
+                });
+                
+                log(`创建凭证响应状态码: ${response.status}`);
+                const text = await response.text();
+                log(`创建凭证原始响应: ${text}`);
+                
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        log(`创建凭证成功！验证码: ${data.verificationCode}`);
+                        verificationCodeInput.value = data.verificationCode;
+                    } else {
+                        log(`创建凭证失败: ${data.message || data.error}`);
+                    }
+                } catch (e) {
+                    log(`创建凭证响应解析错误: ${e.message}`);
+                }
+            } catch (error) {
+                log(`创建凭证时发生错误: ${error.message}`);
+            }
+        });
+        
+        // 验证凭证
+        document.getElementById('verify-code').addEventListener('click', async function() {
+            const code = verificationCodeInput.value.trim();
+            if (!code) {
+                log('请输入验证码');
+                return;
+            }
+            
+            try {
+                log(`开始验证验证码: ${code}`);
+                
+                // 使用fetch API直接调用验证端点
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ verification_code: code })
+                });
+                
+                log(`验证响应状态码: ${response.status}`);
+                
+                // 获取所有响应头信息
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                    headers[key] = value;
+                });
+                log(`响应头信息: ${JSON.stringify(headers, null, 2)}`);
+                
+                // 获取原始响应文本
+                const text = await response.text();
+                log(`原始响应文本: ${text}`);
+                
+                // 尝试解析JSON
+                try {
+                    const data = JSON.parse(text);
+                    log(`解析后的响应数据: ${JSON.stringify(data, null, 2)}`);
+                    
+                    if (data.valid) {
+                        log('✅ 验证成功！');
+                    } else {
+                        log(`❌ 验证失败: ${data.message || '未知错误'}`);
+                    }
+                } catch (jsonError) {
+                    log(`❌ 解析JSON失败: ${jsonError.message}`);
+                    log(`原始响应文本可能不是有效的JSON格式`);
+                }
+            } catch (error) {
+                log(`❌ 验证过程中发生网络错误: ${error.message}`);
+                log(`请检查网络连接和服务器状态`);
+            }
+        });
+    </script>
+</body>
+</html>

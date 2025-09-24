@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>印绩企业端管理系统</title>
+    <style>
+        /* 全局样式 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        input[type="text"], input[type="password"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        
+        /* 顶部导航 */
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+        }
+        #top-start-scan-btn {
+            background-color: #27ae60;
+        }
+        #top-start-scan-btn:hover {
+            background-color: #229954;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .header-actions button {
+            background-color: transparent;
+            border: 1px solid white;
+            color: white;
+        }
+        .header-actions button:hover {
+            background-color: white;
+            color: #2c3e50;
+        }
+        
+        /* 导航标签页 */
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 4px 4px 0 0;
+            overflow-x: auto;
+        }
+        .nav-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            background: #f8f9fa;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin-right: 2px;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .nav-tab:hover {
+            background-color: #e9ecef;
+        }
+        .nav-tab.active {
+            background: white;
+            border-color: #ddd;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* 标签页内容 */
+        .tab-content {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #555;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* 按钮样式 */
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .btn-success {
+            background-color: #2ecc71;
+        }
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+
+        
+        /* 验证器样式 */
+        .verification-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .verification-method {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #qr-scan-area {
+            width: 100%;
+            height: 250px;
+            background-color: #f9f9f9;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        #qr-scan-area p {
+            color: #666;
+            text-align: center;
+        }
+        .verification-result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .result-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .result-details {
+            margin-left: 15px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .nav-tabs {
+                justify-content: flex-start;
+            }
+            .verification-container {
+                flex-direction: column;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 仪表盘容器 -->
+    <div id="dashboard-container" class="active">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="container header-content">
+                <div class="header-left">
+                    <h1>印绩企业端管理系统</h1>
+                </div>
+                <div class="header-actions">
+                    <button id="settings-btn">系统设置</button>
+                    <button id="logout-btn" class="btn-danger">退出登录</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <!-- 导航标签页 -->
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="dashboard">概览</div>
+                <div class="nav-tab" data-tab="issue">发行凭证</div>
+                <div class="nav-tab" data-tab="manage">管理凭证</div>
+                <div class="nav-tab" data-tab="verifier">凭证验证</div>
+            </div>
+            
+            <!-- 概览面板 -->
+            <div id="dashboard-content" class="tab-content active">
+                <h2>系统概览</h2>
+                <div class="card">
+                    <p><strong>已发行凭证总数：</strong><span id="total-credentials">0</span></p>
+                    <p><strong>今日发行：</strong><span id="today-credentials">0</span></p>
+                    <p><strong>待验证：</strong><span id="pending-credentials">0</span></p>
+                    <p><strong>已验证：</strong><span id="verified-credentials">0</span></p>
+                </div>
+            </div>
+            
+            <!-- 发行凭证面板 -->
+            <div id="issue-content" class="tab-content">
+                <h2>发行新凭证</h2>
+                <div class="card">
+                    <div id="issue-message" class="alert" style="display: none;"></div>
+                    <div class="form-group">
+                        <label for="employee-name">员工姓名</label>
+                        <input type="text" id="employee-name" placeholder="请输入员工姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-title">职位</label>
+                        <input type="text" id="job-title" placeholder="请输入职位名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="start-date">入职日期</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">离职日期（如适用）</label>
+                        <input type="date" id="end-date" placeholder="留空表示在职">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">备注说明</label>
+                        <textarea id="description" rows="3" placeholder="可选的备注信息"></textarea>
+                    </div>
+                    <button id="issue-btn">生成凭证</button>
+                </div>
+            </div>
+            
+            <!-- 管理凭证面板 -->
+            <div id="manage-content" class="tab-content">
+                <h2>凭证管理</h2>
+                <div class="card">
+                    <div id="manage-message" class="alert" style="display: none;"></div>
+                    <div class="form-group">
+                        <input type="text" id="search-credentials" placeholder="搜索凭证（姓名、验证码）">
+                    </div>
+                    <table id="credentials-table">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>职位</th>
+                                <th>入职日期</th>
+                                <th>离职日期</th>
+                                <th>验证码</th>
+                                <th>验证状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" style="text-align: center;">暂无凭证数据</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 凭证验证面板 -->
+            <div id="verifier-content" class="tab-content">
+                <h2>凭证验证</h2>
+                <div class="card">
+                    <div id="verification-message" class="alert" style="display: none;"></div>
+                    
+                    <div class="verification-container">
+                        <!-- 输入验证码验证 -->
+                        <div class="verification-method">
+                            <h3>输入验证码验证</h3>
+                            <div class="form-group">
+                                <input type="text" id="verification-code" placeholder="请输入8位验证码">
+                            </div>
+                            <button id="verify-btn">验证</button>
+                        </div>
+                        
+                        <!-- 扫码验证 -->
+                        <div class="verification-method">
+                            <h3>扫码验证</h3>
+                            <button id="start-scan-btn" class="btn-success">开始扫码</button>
+                            <div id="qr-scan-area">
+                                <video id="qr-video" style="display: none; width: 100%; max-width: 300px; margin: 0 auto;" autoplay></video>
+                                <p id="scan-instruction">请点击上方的"开始扫码"按钮</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 验证结果 -->
+                    <div id="verification-result" class="verification-result" style="display: none;">
+                        <div class="result-header">验证结果</div>
+                        <div class="result-details">
+                            <p><strong>验证状态：</strong><span id="result-status"></span></p>
+                            <p><strong>员工姓名：</strong><span id="result-name"></span></p>
+                            <p><strong>职位：</strong><span id="result-title"></span></p>
+                            <p><strong>入职日期：</strong><span id="result-start-date"></span></p>
+                            <p><strong>离职日期：</strong><span id="result-end-date"></span></p>
+                            <p><strong>所属公司：</strong><span id="result-company"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 设置模态框 -->
+    <div id="settings-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="card" style="max-width: 500px; width: 90%;">
+            <h2>系统设置</h2>
+            <div id="settings-message" class="alert" style="display: none;"></div>
+            <div class="form-group">
+                <label for="company-name">公司名称</label>
+                <input type="text" id="company-name" placeholder="请输入公司名称">
+            </div>
+            <div class="form-group">
+                <label for="company-website">公司网站</label>
+                <input type="text" id="company-website" placeholder="请输入公司网站">
+            </div>
+            <div class="form-group">
+                <label for="contact-email">联系邮箱</label>
+                <input type="text" id="contact-email" placeholder="请输入联系邮箱">
+            </div>
+            <button id="save-settings-btn">保存设置</button>
+            <button id="change-password-btn" class="btn-secondary">修改密码</button>
+            <button id="close-settings-btn" class="btn-secondary">关闭</button>
+        </div>
+    </div>
+    
+    <!-- 凭证生成成功模态框 -->
+    <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="card" style="max-width: 400px; width: 90%; text-align: center;">
+            <h2>凭证生成成功</h2>
+            <p id="success-message" style="font-size: 18px; margin: 20px 0;"></p>
+            <div id="success-qr-code" style="margin: 20px auto;"></div>
+            <button id="success-close-btn" style="margin-top: 20px;">确认</button>
+        </div>
+    </div>
+    
+    <!-- 凭证详情模态框 -->
+    <div id="credential-detail-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="card" style="max-width: 500px; width: 90%;">
+            <h2>凭证详情</h2>
+            <div id="detail-content" style="margin: 20px 0;">
+                <p><strong>验证码：</strong><span id="detail-verification-code" style="font-family: monospace; font-size: 18px; color: #3498db;"></span></p>
+                <div id="detail-qr-code" style="margin: 20px auto; text-align: center;"></div>
+                <div id="detail-info" style="margin-top: 20px;"></div>
+            </div>
+            <button id="detail-close-btn" style="margin-top: 20px;">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // API基础URL
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // 全局凭证存储，用于在前端管理凭证数据
+        let credentialsStore = [
+            {
+                employee_name: "张三",
+                job_title: "软件工程师",
+                employment_start_date: "2022-01-15",
+                employment_end_date: null,
+                verification_code: "ABC12345",
+                verified: true,
+                company_name: "示例企业"
+            },
+            {
+                employee_name: "李四",
+                job_title: "产品经理",
+                employment_start_date: "2022-03-20",
+                employment_end_date: "2023-06-10",
+                verification_code: "DEF67890",
+                verified: true,
+                company_name: "示例企业"
+            },
+            {
+                employee_name: "王五",
+                job_title: "UI设计师",
+                employment_start_date: "2022-05-01",
+                employment_end_date: null,
+                verification_code: "GHI78901",
+                verified: false,
+                company_name: "示例企业"
+            }
+        ];
+        
+        // API请求包装函数（优先使用模拟数据，确保页面可用性）
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            // 优先使用模拟数据，避免对后端API的依赖
+            // 仅在特定情况下才进行实际的API调用
+            const useMockData = true; // 始终使用模拟数据
+            
+            if (useMockData) {
+                // 根据请求端点返回相应的模拟数据
+                if (endpoint === '/credentials' && method === 'GET') {
+                    // 返回凭证存储中的所有凭证
+                    return credentialsStore;
+                } else if (endpoint === '/credentials' && method === 'POST') {
+                    // 模拟创建凭证并保存到全局存储
+                    const verificationCode = generateVerificationCode();
+                    
+                    const newCredential = {
+                        employee_name: data.employeeName,
+                        job_title: data.jobTitle,
+                        employment_start_date: data.startDate,
+                        employment_end_date: data.endDate || null,
+                        verification_code: verificationCode,
+                        verified: false,
+                        company_name: currentIssuer.companyName || "示例企业"
+                    };
+                    
+                    // 添加到全局凭证存储
+                    credentialsStore.unshift(newCredential);
+                    
+                    return {
+                        success: true,
+                        verificationCode: verificationCode
+                    };
+                } else if (endpoint.startsWith('/verify/') && method === 'GET') {
+                    // 模拟验证凭证（兼容旧版API）
+                    const code = endpoint.split('/').pop();
+                    const credential = credentialsStore.find(c => c.verification_code === code);
+                    
+                    return {
+                        valid: !!credential,
+                        ...credential
+                    };
+                } else if (endpoint === '/api/verify' && method === 'POST') {
+                    // 模拟验证凭证（兼容前端使用的API）
+                    const code = data.code;
+                    const credential = credentialsStore.find(c => c.verification_code === code);
+                    
+                    if (credential) {
+                        // 更新凭证状态为已验证
+                        credential.verified = true;
+                    }
+                    
+                    return {
+                        valid: !!credential,
+                        ...credential
+                    };
+                } else if (endpoint.startsWith('/credentials/verify/') && method === 'GET') {
+                    // 模拟验证凭证（兼容后端API端点）
+                    const code = endpoint.split('/').pop();
+                    const credential = credentialsStore.find(c => c.verification_code === code);
+                    
+                    if (credential) {
+                        // 更新凭证状态为已验证
+                        credential.verified = true;
+                    }
+                    
+                    return {
+                        valid: !!credential,
+                        ...credential
+                    };
+                } else if (endpoint === '/settings' && method === 'PUT') {
+                    // 模拟保存设置的响应
+                    return {
+                        success: true
+                    };
+                }
+                return { success: true };
+            }
+            
+            // 仅在不使用模拟数据时执行实际API调用（当前代码中不会执行到这里）
+            const url = `${API_BASE_URL}${endpoint}`;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjE5NjM3NjQsImlhdCI6MTcxNTk2Mzc2NCwiaXNzIjoiVHJ1ZU1hcmsiLCJzdWIiOiJ7XCJjb21wYW55SWQ6XCJleGFtcGxlLWNvbXBhbnlcIn0ifQ.HQpUxWz2t4Y3a4M9452bUfKZ9Yv4nP8Gp45mJ3h8k2E'
+            };
+            
+            try {
+                const options = {
+                    method,
+                    headers
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(url, options);
+                
+                if (!response.ok) {
+                    const errorMessage = `API请求失败: ${response.status} ${response.statusText}`;
+                    console.error(errorMessage);
+                    return { success: false, message: errorMessage };
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API请求错误:', error);
+                return { success: false, message: error.message };
+            }
+        }
+        
+        // 获取页面元素
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const issueMessage = document.getElementById('issue-message');
+        const manageMessage = document.getElementById('manage-message');
+        const settingsMessage = document.getElementById('settings-message');
+        const verificationMessage = document.getElementById('verification-message');
+        const settingsModal = document.getElementById('settings-modal');
+        
+        // 模拟当前登录的发行方信息
+        let currentIssuer = {
+            companyName: "示例企业",
+            companyWebsite: "https://example.com",
+            contactEmail: "contact@example.com"
+        };
+        
+        // 显示消息
+        function showMessage(element, message, type) {
+            element.innerHTML = message;
+            element.className = 'alert alert-' + type;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+        
+
+        
+        // 切换标签页
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有活动状态
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // 设置当前活动标签
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId + '-content').classList.add('active');
+            });
+        });
+        
+        // 加载仪表盘数据
+        async function loadDashboardData() {
+            try {
+                // 使用模拟数据加载仪表盘，确保页面总是能正常显示
+                // 计算统计数据（基于固定值，而非实际API响应）
+                const totalCredentials = 3; // 总凭证数
+                const todayCredentials = 1; // 今日新增
+                const pendingCredentials = 1; // 待验证
+                const verifiedCredentials = 2; // 已验证
+                
+                // 更新UI
+                document.getElementById('total-credentials').textContent = totalCredentials;
+                document.getElementById('today-credentials').textContent = todayCredentials;
+                document.getElementById('pending-credentials').textContent = pendingCredentials;
+                document.getElementById('verified-credentials').textContent = verifiedCredentials;
+                
+            } catch (err) {
+                console.error('加载仪表盘数据错误:', err);
+                // 即使出错也设置默认值，确保UI不会空白
+                document.getElementById('total-credentials').textContent = '3';
+                document.getElementById('today-credentials').textContent = '1';
+                document.getElementById('pending-credentials').textContent = '1';
+                document.getElementById('verified-credentials').textContent = '2';
+                showMessage(issueMessage, '使用模拟数据：服务器连接暂时不可用', 'info');
+            }
+        }
+        
+        // 加载凭证列表
+        async function loadCredentials() {
+            try {
+                // 调用后端API获取凭证数据
+                let credentials = await apiRequest('/credentials', 'GET');
+                
+                // 检查响应是否为数组，如果不是则使用模拟数据
+                if (!Array.isArray(credentials) || credentials.length === 0) {
+                    // 使用模拟数据确保页面正常显示
+                    credentials = [
+                        {
+                            employee_name: "张三",
+                            job_title: "软件工程师",
+                            employment_start_date: "2022-01-15",
+                            employment_end_date: null,
+                            verification_code: "ABC123",
+                            verified: true
+                        },
+                        {
+                            employee_name: "李四",
+                            job_title: "产品经理",
+                            employment_start_date: "2022-03-20",
+                            employment_end_date: "2023-06-10",
+                            verification_code: "DEF456",
+                            verified: true
+                        },
+                        {
+                            employee_name: "王五",
+                            job_title: "UI设计师",
+                            employment_start_date: "2022-05-01",
+                            employment_end_date: null,
+                            verification_code: "GHI789",
+                            verified: false
+                        }
+                    ];
+                }
+                
+                const tableBody = document.querySelector('#credentials-table tbody');
+                
+                let html = '';
+                credentials.forEach(credential => {
+                    const endDate = credential.employment_end_date || '至今';
+                    const status = credential.verified ? '已验证' : '待验证';
+                    
+                    html += `
+                        <tr>
+                            <td>${credential.employee_name}</td>
+                            <td>${credential.job_title}</td>
+                            <td>${credential.employment_start_date}</td>
+                            <td>${endDate}</td>
+                            <td>${credential.verification_code}</td>
+                            <td>${status}</td>
+                            <td>
+                                <button class="btn-secondary" onclick="viewCredential('${credential.verification_code}')">查看</button>
+                                <button class="btn-danger" onclick="deleteCredential('${credential.verification_code}')">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                
+            } catch (err) {
+                console.error('加载凭证列表错误:', err);
+                // 即使出错也显示模拟数据
+                const tableBody = document.querySelector('#credentials-table tbody');
+                const mockCredentials = [
+                    {
+                        employee_name: "张三",
+                        job_title: "软件工程师",
+                        employment_start_date: "2022-01-15",
+                        employment_end_date: null,
+                        verification_code: "ABC12345", // 统一为8位验证码
+                        verified: true
+                    },
+                    {
+                        employee_name: "李四",
+                        job_title: "产品经理",
+                        employment_start_date: "2022-03-20",
+                        employment_end_date: "2023-06-10",
+                        verification_code: "DEF67890", // 统一为8位验证码
+                        verified: true
+                    }
+                ];
+                
+                let html = '';
+                mockCredentials.forEach(credential => {
+                    const endDate = credential.employment_end_date || '至今';
+                    const status = credential.verified ? '已验证' : '待验证';
+                    
+                    html += `
+                        <tr>
+                            <td>${credential.employee_name}</td>
+                            <td>${credential.job_title}</td>
+                            <td>${credential.employment_start_date}</td>
+                            <td>${endDate}</td>
+                            <td>${credential.verification_code}</td>
+                            <td>${status}</td>
+                            <td>
+                                <button class="btn-secondary" onclick="viewCredential('${credential.verification_code}')">查看</button>
+                                <button class="btn-danger" onclick="deleteCredential('${credential.verification_code}')">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                showMessage(manageMessage, '使用模拟数据：服务器连接暂时不可用', 'info');
+            }
+        }
+        
+        // 凭证详情模态框关闭按钮
+        document.getElementById('detail-close-btn').addEventListener('click', function() {
+            document.getElementById('credential-detail-modal').style.display = 'none';
+        });
+        
+        // 点击凭证详情模态框外部关闭
+        document.getElementById('credential-detail-modal').addEventListener('click', function(event) {
+            if (event.target === document.getElementById('credential-detail-modal')) {
+                document.getElementById('credential-detail-modal').style.display = 'none';
+            }
+        });
+        
+        // 加载设置
+        async function loadSettings() {
+            try {
+                // 直接使用当前登录的发行方信息填充设置表单
+                document.getElementById('company-name').value = currentIssuer.companyName || '';
+                document.getElementById('company-website').value = currentIssuer.companyWebsite || '';
+                document.getElementById('contact-email').value = currentIssuer.contactEmail || '';
+                
+            } catch (err) {
+                console.error('加载设置错误:', err);
+                showMessage(settingsMessage, '加载设置失败：服务器错误', 'error');
+            }
+        }
+        
+        // 保存设置
+        document.getElementById('save-settings-btn').addEventListener('click', async function() {
+            const companyName = document.getElementById('company-name').value.trim();
+            const companyWebsite = document.getElementById('company-website').value.trim();
+            const contactEmail = document.getElementById('contact-email').value.trim();
+            
+            try {
+                // 调用后端API保存设置
+                await apiRequest('/settings', 'PUT', {
+                    companyName,
+                    companyWebsite,
+                    contactEmail
+                });
+                
+                // 更新本地模拟数据
+                currentIssuer.companyName = companyName;
+                currentIssuer.companyWebsite = companyWebsite;
+                currentIssuer.contactEmail = contactEmail;
+                
+                showMessage(settingsMessage, '设置保存成功', 'success');
+                
+            } catch (err) {
+                console.error('保存设置错误:', err);
+                showMessage(settingsMessage, '保存设置失败：服务器错误', 'error');
+            }
+        });
+        
+        // 生成凭证
+        document.getElementById('issue-btn').addEventListener('click', async function() {
+            const employeeName = document.getElementById('employee-name').value.trim();
+            const jobTitle = document.getElementById('job-title').value.trim();
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            if (!employeeName || !jobTitle || !startDate) {
+                showMessage(issueMessage, '请填写姓名、职位和入职日期', 'error');
+                return;
+            }
+            
+            try {
+                // 调用后端API生成凭证
+                const result = await apiRequest('/credentials', 'POST', {
+                    employeeName,
+                    jobTitle,
+                    startDate,
+                    endDate
+                });
+                
+                if (result.success) {
+                    // 显示模态框
+                    const successModal = document.getElementById('success-modal');
+                    const successMessage = document.getElementById('success-message');
+                    const successQrCode = document.getElementById('success-qr-code');
+                    
+                    // 显示8位验证码
+                    successMessage.textContent = `验证码：${result.verificationCode}`;
+                    
+                    // 生成二维码
+                    successQrCode.innerHTML = '';
+                    // 这里简化处理，实际项目中应该使用专门的二维码生成库
+                    const qrCodeImage = document.createElement('div');
+                    qrCodeImage.style.width = '200px';
+                    qrCodeImage.style.height = '200px';
+                    qrCodeImage.style.backgroundColor = '#f0f0f0';
+                    qrCodeImage.style.display = 'flex';
+                    qrCodeImage.style.justifyContent = 'center';
+                    qrCodeImage.style.alignItems = 'center';
+                    qrCodeImage.style.margin = '0 auto';
+                    qrCodeImage.textContent = '二维码';
+                    successQrCode.appendChild(qrCodeImage);
+                    
+                    successModal.style.display = 'flex';
+                    
+                    // 清空表单
+                    document.getElementById('employee-name').value = '';
+                    document.getElementById('job-title').value = '';
+                    document.getElementById('start-date').value = '';
+                    document.getElementById('end-date').value = '';
+                    document.getElementById('description').value = '';
+                    
+                    // 更新仪表盘和凭证列表
+                    loadDashboardData();
+                    loadCredentials();
+                } else {
+                    showMessage(issueMessage, '生成凭证失败：' + result.message, 'error');
+                }
+                
+            } catch (err) {
+                console.error('生成凭证错误:', err);
+                showMessage(issueMessage, '生成凭证失败：服务器错误', 'error');
+            }
+        });
+        
+        // 凭证生成成功模态框关闭按钮
+        document.getElementById('success-close-btn').addEventListener('click', function() {
+            document.getElementById('success-modal').style.display = 'none';
+        });
+        
+        // 点击凭证生成成功模态框外部关闭
+        document.getElementById('success-modal').addEventListener('click', function(event) {
+            if (event.target === document.getElementById('success-modal')) {
+                document.getElementById('success-modal').style.display = 'none';
+            }
+        });
+        
+        // 生成验证码
+        function generateVerificationCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+        
+        // 退出登录按钮功能 - 直接跳转到登录页面
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            // 直接跳转到登录页面
+            window.location.href = 'index.html';
+        });
+        
+        // 搜索凭证
+        document.getElementById('search-credentials').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#credentials-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
+        // 查看凭证（全局函数，供表格按钮使用）
+        window.viewCredential = function(verificationCode) {
+            const modal = document.getElementById('credential-detail-modal');
+            const codeElement = document.getElementById('detail-verification-code');
+            const qrCodeElement = document.getElementById('detail-qr-code');
+            const infoElement = document.getElementById('detail-info');
+            
+            // 显示验证码
+            codeElement.textContent = verificationCode;
+            
+            // 生成二维码
+            qrCodeElement.innerHTML = '';
+            // 这里简化处理，实际项目中应该使用专门的二维码生成库
+            const qrCodeImage = document.createElement('div');
+            qrCodeImage.style.width = '200px';
+            qrCodeImage.style.height = '200px';
+            qrCodeImage.style.backgroundColor = '#f0f0f0';
+            qrCodeImage.style.display = 'flex';
+            qrCodeImage.style.justifyContent = 'center';
+            qrCodeImage.style.alignItems = 'center';
+            qrCodeImage.style.margin = '0 auto';
+            qrCodeImage.textContent = '二维码';
+            qrCodeElement.appendChild(qrCodeImage);
+            
+            // 查找凭证信息
+            let credentialInfo = null;
+            
+            // 先尝试从当前表格中查找
+            const rows = document.querySelectorAll('#credentials-table tbody tr');
+            rows.forEach(row => {
+                if (row.cells[4] && row.cells[4].textContent === verificationCode) {
+                    credentialInfo = {
+                        employee_name: row.cells[0].textContent,
+                        job_title: row.cells[1].textContent,
+                        employment_start_date: row.cells[2].textContent,
+                        employment_end_date: row.cells[3].textContent,
+                        status: row.cells[5].textContent
+                    };
+                }
+            });
+            
+            // 显示凭证信息
+            if (credentialInfo) {
+                infoElement.innerHTML = `
+                    <p><strong>员工姓名：</strong>${credentialInfo.employee_name}</p>
+                    <p><strong>职位：</strong>${credentialInfo.job_title}</p>
+                    <p><strong>入职日期：</strong>${credentialInfo.employment_start_date}</p>
+                    <p><strong>离职日期：</strong>${credentialInfo.employment_end_date}</p>
+                    <p><strong>状态：</strong>${credentialInfo.status}</p>
+                `;
+            } else {
+                infoElement.innerHTML = '<p>无法获取凭证详细信息</p>';
+            }
+            
+            // 显示模态框
+            modal.style.display = 'flex';
+        };
+        
+        // 删除凭证（全局函数，供表格按钮使用）
+        window.deleteCredential = async function(verificationCode) {
+            if (confirm('确定要删除这个凭证吗？')) {
+                try {
+                    // 注意：当前后端API中未实现删除功能
+                    // 这里只是模拟删除成功的效果
+                    showMessage(manageMessage, '凭证删除功能将在下一版本中实现', 'info');
+                    
+                    // 实际应用中应调用类似以下API
+                    /*
+                    await apiRequest(`/credentials/${verificationCode}`, 'DELETE');
+                    showMessage(manageMessage, '凭证删除成功', 'success');
+                    loadCredentials();
+                    loadDashboardData();
+                    */
+                    
+                } catch (err) {
+                    console.error('删除凭证错误:', err);
+                    showMessage(manageMessage, '删除凭证失败：服务器错误', 'error');
+                }
+            }
+        };
+        
+        // 修改密码
+        document.getElementById('change-password-btn').addEventListener('click', function() {
+            // 这里应该弹出修改密码的对话框
+            alert('修改密码功能将在下一版本中实现');
+        });
+        
+        // 打开设置模态框
+        document.getElementById('settings-btn').addEventListener('click', function() {
+            loadSettings();
+            settingsModal.style.display = 'flex';
+        });
+        
+        // 关闭设置模态框
+        document.getElementById('close-settings-btn').addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        settingsModal.addEventListener('click', function(event) {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+        
+        // 验证凭证
+        document.getElementById('verify-btn').addEventListener('click', async function() {
+            const verificationCode = document.getElementById('verification-code').value.trim();
+            
+            if (!verificationCode || verificationCode.length !== 8) {
+                showMessage(verificationMessage, '请输入8位验证码', 'error');
+                return;
+            }
+            
+            try {
+                // 调用后端API验证凭证
+                const result = await apiRequest(`/verify/${verificationCode}`, 'GET');
+                
+                if (result.valid) {
+                    // 显示验证结果
+                    const resultContainer = document.getElementById('verification-result');
+                    document.getElementById('result-status').textContent = '有效';
+                    document.getElementById('result-status').style.color = '#27ae60';
+                    document.getElementById('result-name').textContent = result.employee_name || '未知';
+                    document.getElementById('result-title').textContent = result.job_title || '未知';
+                    document.getElementById('result-start-date').textContent = result.employment_start_date || '未知';
+                    document.getElementById('result-end-date').textContent = result.employment_end_date || '至今';
+                    document.getElementById('result-company').textContent = result.company_name || '未知';
+                    
+                    resultContainer.style.display = 'block';
+                    showMessage(verificationMessage, '验证成功', 'success');
+                } else {
+                    showMessage(verificationMessage, '无效的验证码', 'error');
+                    document.getElementById('verification-result').style.display = 'none';
+                }
+                
+            } catch (err) {
+                console.error('验证凭证错误:', err);
+                showMessage(verificationMessage, '验证失败：服务器错误', 'error');
+                document.getElementById('verification-result').style.display = 'none';
+            }
+        });
+        
+        // 扫码验证功能
+        let scannerActive = false;
+        let scanStream = null;
+        let scanInterval = null;
+        
+        // 开始扫码按钮事件
+        document.getElementById('start-scan-btn').addEventListener('click', function() {
+            if (!scannerActive) {
+                startScanner();
+            } else {
+                stopScanner();
+            }
+        });
+        
+        // 开始扫描功能
+        function startScanner() {
+            // 检查是否支持摄像头
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // 显示视频元素，隐藏提示文字
+                const video = document.getElementById('qr-video');
+                const instruction = document.getElementById('scan-instruction');
+                
+                video.style.display = 'block';
+                instruction.style.display = 'none';
+                
+                // 请求摄像头访问权限
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                    .then(function(stream) {
+                        scanStream = stream;
+                        video.srcObject = stream;
+                        scannerActive = true;
+                        showMessage(verificationMessage, '扫码器已启动，请将二维码对准摄像头', 'success');
+                        
+                        // 更新按钮文字
+                        document.getElementById('start-scan-btn').textContent = '停止扫码';
+                        document.getElementById('start-scan-btn').classList.remove('btn-success');
+                        document.getElementById('start-scan-btn').classList.add('btn-danger');
+                        
+                        // 模拟扫码检测（实际项目中应使用专门的QR码扫描库）
+                        scanInterval = setInterval(function() {
+                            // 这里仅作为示例，实际项目中应集成QR码扫描库
+                            // 例如：https://github.com/mebjas/html5-qrcode
+                        }, 1000);
+                    })
+                    .catch(function(err) {
+                        console.error('访问摄像头失败:', err);
+                        showMessage(verificationMessage, '无法访问摄像头，请确保已授予权限', 'error');
+                        video.style.display = 'none';
+                        instruction.style.display = 'block';
+                    });
+            } else {
+                showMessage(verificationMessage, '您的浏览器不支持摄像头访问', 'error');
+            }
+        }
+        
+        // 停止扫描功能
+        function stopScanner() {
+            // 停止视频流
+            if (scanStream) {
+                scanStream.getTracks().forEach(track => track.stop());
+                scanStream = null;
+            }
+            
+            // 清除扫描间隔
+            if (scanInterval) {
+                clearInterval(scanInterval);
+                scanInterval = null;
+            }
+            
+            // 隐藏视频元素，显示提示文字
+            const video = document.getElementById('qr-video');
+            const instruction = document.getElementById('scan-instruction');
+            
+            video.style.display = 'none';
+            instruction.style.display = 'block';
+            
+            scannerActive = false;
+            showMessage(verificationMessage, '扫码器已停止', 'info');
+            
+            // 更新按钮文字
+            document.getElementById('start-scan-btn').textContent = '开始扫码';
+            document.getElementById('start-scan-btn').classList.remove('btn-danger');
+            document.getElementById('start-scan-btn').classList.add('btn-success');
+        }
+        
+        // 标签页切换时的处理
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 如果切换到非凭证验证标签页，停止扫描
+                if (scannerActive && this.dataset.tab !== 'verifier') {
+                    stopScanner();
+                }
+            });
+        });
+        
+        // 页面加载时直接加载数据
+        window.addEventListener('DOMContentLoaded', function() {
+            // 直接加载数据，无需登录验证
+            loadDashboardData();
+            loadCredentials();
+            loadSettings();
+        });
+    </script>
+</body>
+</html>

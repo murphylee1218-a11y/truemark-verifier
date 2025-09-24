@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueMark 验证器</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .scan-section, .input-section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .or-divider {
+            text-align: center;
+            color: #666;
+        }
+        .result-section {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .success {
+            display: block !important;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            display: block !important;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>TrueMark 验证器</h1>
+    <p>扫描二维码或输入验证码，快速验证职业凭证真伪。</p>
+    <div class="container">
+        <div class="scan-section">
+            <h3>扫描二维码</h3>
+            <div id="qr-reader"></div>
+            <button id="start-scanner">启动扫描仪</button>
+            <button id="stop-scanner" style="display:none">停止扫描</button>
+        </div>
+        <div class="or-divider">—— 或 ——</div>
+        <div class="input-section">
+            <h3>输入验证码</h3>
+            <input type="text" id="verification-code" placeholder="请输入凭证上的验证码">
+            <button id="verify-btn">验证</button>
+        </div>
+        <div id="result" class="result-section"></div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        <script>
+    // 检查所需库是否已加载
+    function checkLibraries() {
+        if (typeof window.Html5Qrcode === 'undefined') {
+            console.error('Html5Qrcode库未正确加载');
+            alert('错误：二维码扫描功能加载失败，请刷新页面重试');
+            return false;
+        }
+        
+        if (typeof window.supabase === 'undefined') {
+            console.error('Supabase库未正确加载');
+            alert('错误：数据库连接失败，请刷新页面重试');
+            return false;
+        }
+        
+        console.log('所有必需库已加载成功');
+        return true;
+    }
+
+    // 初始化 Supabase 客户端（只有在库加载成功后才执行）
+    let supabase;
+    if (checkLibraries()) {
+        const supabaseUrl = 'https://ryvpfeidqdsrukfzwbmf.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dnBmZWlkcWRzcnVrZnp3Ym1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2ODEwNzAsImV4cCI6MjA3NDI1NzA3MH0.dRw-hjqnNfKpYwzmfX3JkTGUl__w82jApdkU-Pyy6ZE';
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        console.log('Supabase客户端初始化完成！');
+    } else {
+        // 如果库加载失败，禁用所有按钮
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('start-scanner').disabled = true;
+            document.getElementById('verify-btn').disabled = true;
+            document.getElementById('start-scanner').textContent = '功能加载失败，请刷新页面';
+            document.getElementById('verify-btn').textContent = '功能加载失败，请刷新页面';
+        });
+        // 停止执行后续代码
+        throw new Error('必需的库未加载，应用无法启动');
+    }
+    
+    // 获取页面元素
+    const startScannerBtn = document.getElementById('start-scanner');
+    const stopScannerBtn = document.getElementById('stop-scanner');
+    const verifyBtn = document.getElementById('verify-btn');
+    const verificationCodeInput = document.getElementById('verification-code');
+    const resultDiv = document.getElementById('result');
+
+    let html5QrCode; // 用于存储扫描器实例
+
+    // 初始化二维码扫描器
+    function initScanner() {
+        html5QrCode = new Html5Qrcode("qr-reader");
+    }
+
+    // 启动扫描函数
+    async function startScan() {
+        try {
+            const cameraId = await Html5Qrcode.getCameras().then(cameras => {
+                if (cameras && cameras.length) {
+                    return cameras[0].id;
+                }
+                throw new Error('未找到摄像头');
+            });
+
+            await html5QrCode.start(
+                cameraId,
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                onScanSuccess,
+                onScanFailure
+            );
+
+            startScannerBtn.style.display = 'none';
+            stopScannerBtn.style.display = 'inline-block';
+            console.log('二维码扫描器启动成功');
+
+        } catch (err) {
+            console.error('启动扫描器失败:', err);
+            showResult('无法启动摄像头，请检查权限或尝试手动输入验证码。', 'error');
+        }
+    }
+
+    // 扫描成功回调函数
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`扫描结果: ${decodedText}`);
+        verificationCodeInput.value = decodedText;
+        stopScan();
+        verifyCredential(decodedText);
+    }
+
+    // 扫描失败回调函数
+    function onScanFailure(error) {
+        // 静默失败
+    }
+
+    // 停止扫描函数
+    function stopScan() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                console.log('二维码扫描器已停止');
+                startScannerBtn.style.display = 'inline-block';
+                stopScannerBtn.style.display = 'none';
+            }).catch(err => {
+                console.error('停止扫描器失败:', err);
+            });
+        }
+    }
+
+    // 核心功能：验证凭证函数
+    async function verifyCredential(verificationCode) {
+        resultDiv.innerHTML = '验证中...';
+        resultDiv.className = 'result-section';
+        resultDiv.style.display = 'block';
+
+        try {
+            const { data, error } = await supabase
+                .from('credentials')
+                .select(`
+                    employee_name,
+                    job_title,
+                    employment_start_date,
+                    employment_end_date,
+                    issuers (company_name)
+                `)
+                .eq('verification_code', verificationCode.trim())
+                .single();
+
+            if (error) throw error;
+
+            if (data) {
+                const credential = data;
+                const endDate = credential.employment_end_date || '至今';
+                const successHTML = `
+                    <h3>✅ 验证成功！</h3>
+                    <p><strong>该凭证已验证有效</strong></p>
+                    <p><strong>姓名：</strong>${credential.employee_name}</p>
+                    <p><strong>职位：</strong>${credential.job_title}</p>
+                    <p><strong>公司：</strong>${credential.issuers.company_name}</p>
+                    <p><strong>在职时间：</strong>${credential.employment_start_date} 至 ${endDate}</p>
+                    <p><em>凭证由 <strong>${credential.issuers.company_name}</strong> 通过 TrueMark 签发</em></p>
+                `;
+                showResult(successHTML, 'success');
+            } else {
+                showResult('❌ 未找到该凭证记录，请与候选人核实验证码是否正确。', 'error');
+            }
+
+        } catch (error) {
+            console.error('验证过程中出错:', error);
+            showResult('❌ 验证失败：服务器错误，请稍后重试。', 'error');
+        }
+    }
+
+    // 显示验证结果函数
+    function showResult(message, type) {
+        resultDiv.innerHTML = message;
+        resultDiv.className = `result-section ${type}`;
+    }
+
+    // 绑定按钮点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+        // 只有库加载成功后才初始化扫描器
+        if (typeof window.Html5Qrcode !== 'undefined') {
+            initScanner();
+        }
+        
+        startScannerBtn.addEventListener('click', startScan);
+        stopScannerBtn.addEventListener('click', stopScan);
+        
+        verifyBtn.addEventListener('click', function() {
+            const code = verificationCodeInput.value.trim();
+            if (code) {
+                verifyCredential(code);
+            } else {
+                showResult('请输入验证码', 'error');
+            }
+        });
+
+        verificationCodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyBtn.click();
+            }
+        });
+    });
+</script>
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .logs {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>登录测试</h1>
+        
+        <div class="form-group">
+            <label for="company-id">企业ID</label>
+            <input type="text" id="company-id" value="TEST001" placeholder="请输入您的企业ID">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" value="test1234" placeholder="请输入您的密码">
+        </div>
+        
+        <button id="test-login-btn">测试登录</button>
+        
+        <div class="logs" id="logs">
+            <div><strong>日志输出:</strong></div>
+        </div>
+    </div>
+    
+    <script>
+        const companyIdInput = document.getElementById('company-id');
+        const passwordInput = document.getElementById('password');
+        const testLoginBtn = document.getElementById('test-login-btn');
+        const logsDiv = document.getElementById('logs');
+        
+        function log(message) {
+            const logItem = document.createElement('div');
+            logItem.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsDiv.appendChild(logItem);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        async function testLogin() {
+            const companyId = companyIdInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            log('开始登录测试...');
+            log(`企业ID: ${companyId}, 密码: ${password.replace(/./g, '*')}`);
+            
+            try {
+                log('尝试直接连接Node.js服务器...');
+                log('请求URL: http://localhost:3000/api/auth/login');
+                
+                // 先测试简单的GET请求，检查连接性
+                log('测试连接性 - 发送GET请求到检查测试账户端点...');
+                const checkResponse = await fetch('http://localhost:3000/api/check-test-account');
+                log(`连接性测试响应状态: ${checkResponse.status}`);
+                
+                if (!checkResponse.ok) {
+                    log(`连接性测试失败: ${checkResponse.status} ${checkResponse.statusText}`);
+                    log('可能存在跨域问题或网络连接问题');
+                    return;
+                }
+                
+                const checkData = await checkResponse.json();
+                log(`连接性测试成功，响应数据: ${JSON.stringify(checkData)}`);
+                
+                // 发送实际的登录请求
+                log('发送登录请求...');
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ companyId, password })
+                });
+                
+                log(`登录请求响应状态: ${response.status}`);
+                
+                // 检查响应头
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                    headers[key] = value;
+                });
+                log(`响应头: ${JSON.stringify(headers)}`);
+                
+                // 尝试解析JSON响应
+                try {
+                    const data = await response.json();
+                    log(`登录响应数据: ${JSON.stringify(data)}`);
+                    
+                    if (response.ok && data.accessToken) {
+                        log('🎉 登录成功！已获取到访问令牌');
+                        log('用户信息: ' + JSON.stringify(data.user));
+                        
+                        // 保存令牌和用户信息到localStorage
+                        localStorage.setItem('authToken', data.accessToken);
+                        localStorage.setItem('userInfo', JSON.stringify(data.user));
+                        log('已保存令牌和用户信息到localStorage');
+                    } else {
+                        log(`❌ 登录失败: ${data.message || '未知错误'}`);
+                    }
+                } catch (jsonError) {
+                    log(`❌ 解析响应JSON时出错: ${jsonError.message}`);
+                    // 尝试获取原始响应文本
+                    try {
+                        const text = await response.text();
+                        log(`原始响应文本: ${text}`);
+                    } catch (textError) {
+                        log('无法获取原始响应文本');
+                    }
+                }
+            } catch (error) {
+                log(`❌ 登录请求失败: ${error.message}`);
+                log('错误详情: ' + JSON.stringify(error));
+                log('可能的原因: 跨域问题、网络连接问题或服务器未运行');
+            }
+        }
+        
+        testLoginBtn.addEventListener('click', testLogin);
+        
+        // 页面加载时自动运行一次测试
+        window.addEventListener('load', testLogin);
+    </script>
+</body>
+</html>

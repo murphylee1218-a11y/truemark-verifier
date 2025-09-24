@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueMark 企业注册</title>
+    <style>
+        /* 全局样式 - 设置基础盒模型、字体和页面背景 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        /* 注册容器样式 */
+        .register-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        /* 标题样式 */
+        .logo {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            font-weight: normal;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group input.error {
+            border-color: #e74c3c;
+        }
+        
+        .error-text {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .form-group input.error + .error-text {
+            display: block;
+        }
+        
+        /* 按钮样式 */
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background-color: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 返回登录链接样式 */
+        .login-link {
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 状态消息样式 */
+        .status-message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info-message {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        /* 加载状态样式 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 待审核状态样式 */
+        .pending-status {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">TrueMark</div>
+        <h1>企业注册</h1>
+        <h3>创建您的企业账号，开始使用TrueMark凭证系统</h3>
+        
+        <!-- 状态消息区域 -->
+        <div id="status-message" class="status-message"></div>
+        
+        <!-- 注册表单 -->
+        <form id="register-form">
+            <div class="form-group">
+                <label for="company-name">企业名称 <span style="color: #e74c3c;">*</span></label>
+                <input type="text" id="company-name" placeholder="请输入您的企业全称">
+                <div class="error-text" id="company-name-error">请输入有效的企业名称</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="contact-person">联系人 <span style="color: #e74c3c;">*</span></label>
+                <input type="text" id="contact-person" placeholder="请输入联系人姓名">
+                <div class="error-text" id="contact-person-error">请输入有效的联系人姓名</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">联系方式 <span style="color: #e74c3c;">*</span></label>
+                <input type="tel" id="phone" placeholder="请输入手机号码">
+                <div class="error-text" id="phone-error">请输入有效的手机号码</div>
+            </div>
+            
+
+            
+            <div class="form-group">
+                <label for="password">密码 <span style="color: #e74c3c;">*</span></label>
+                <input type="password" id="password" placeholder="请设置登录密码">
+                <div class="error-text" id="password-error">密码至少包含8位字符，必须包含字母和数字</div>
+            </div>
+            
+            <button type="submit" id="submit-btn" class="btn-primary">
+                <span class="loading-spinner" style="display: none;"></span>
+                提交注册
+            </button>
+        </form>
+        
+        <!-- 返回登录链接 -->
+        <div class="login-link">
+            已有账号？<a href="index.html" id="login-link">返回登录</a>
+        </div>
+        
+        <!-- 待审核状态显示区域（默认隐藏） -->
+        <div id="pending-section" style="display: none;">
+            <div class="pending-status">
+                <h4>✅ 注册信息已提交，等待审核</h4>
+                <p>感谢您的注册！我们的工作人员将在1-3个工作日内审核您的企业信息。</p>
+                <p>审核通过后，我们会发送短信通知您，并提供进一步的使用指南。</p>
+                <p style="margin-top: 10px;">如有疑问，请联系我们的客服：<strong>support@truemark.com</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 获取页面元素
+        const registerForm = document.getElementById('register-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const statusMessageDiv = document.getElementById('status-message');
+        const pendingSection = document.getElementById('pending-section');
+        const loadingSpinner = submitBtn.querySelector('.loading-spinner');
+        
+        // 获取表单输入元素
+        const companyNameInput = document.getElementById('company-name');
+        const contactPersonInput = document.getElementById('contact-person');
+        const phoneInput = document.getElementById('phone');
+        const passwordInput = document.getElementById('password');
+        
+        // 获取错误消息元素
+        const companyNameError = document.getElementById('company-name-error');
+        const contactPersonError = document.getElementById('contact-person-error');
+        const phoneError = document.getElementById('phone-error');
+        const passwordError = document.getElementById('password-error');
+        
+        // 生成随机企业ID的函数
+        function generateCompanyId() {
+            const prefix = 'cmp';
+            const randomPart = Math.random().toString(36).substring(2, 10);
+            const timestampPart = Date.now().toString(36).substring(2, 6);
+            return `${prefix}${randomPart}${timestampPart}`.substring(0, 12);
+        }
+        
+        /**
+         * 显示状态消息
+         * @param {string} message - 消息内容
+         * @param {string} type - 消息类型（'success', 'error', 'info'）
+         */
+        function showStatusMessage(message, type = 'info') {
+            statusMessageDiv.textContent = message;
+            statusMessageDiv.className = `status-message ${type}-message`;
+            statusMessageDiv.style.display = 'block';
+            
+            // 如果是错误消息，3秒后自动隐藏
+            if (type === 'error') {
+                setTimeout(() => {
+                    statusMessageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        /**
+         * 隐藏状态消息
+         */
+        function hideStatusMessage() {
+            statusMessageDiv.style.display = 'none';
+        }
+        
+        /**
+         * 设置按钮加载状态
+         * @param {boolean} isLoading - 是否为加载状态
+         */
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                loadingSpinner.style.display = 'inline-block';
+                submitBtn.disabled = true;
+            } else {
+                loadingSpinner.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+        
+        /**
+         * 验证手机号格式
+         * @param {string} phone - 手机号
+         * @returns {boolean} - 验证是否通过
+         */
+        function validatePhone(phone) {
+            // 中国大陆手机号正则表达式
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            return phoneRegex.test(phone);
+        }
+        
+
+        
+        /**
+         * 验证密码格式
+         * @param {string} password - 密码
+         * @returns {boolean} - 验证是否通过
+         */
+        function validatePassword(password) {
+            // 密码至少8位，必须包含字母和数字
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            return passwordRegex.test(password);
+        }
+        
+        /**
+         * 验证整个表单
+         * @returns {boolean} - 验证是否通过
+         */
+        function validateForm() {
+            let isValid = true;
+            
+            // 重置所有错误状态
+            const inputs = [companyNameInput, contactPersonInput, phoneInput, passwordInput];
+            inputs.forEach(input => input.classList.remove('error'));
+            
+            // 验证企业名称
+            if (!companyNameInput.value.trim()) {
+                companyNameInput.classList.add('error');
+                isValid = false;
+            }
+            
+            // 验证联系人
+            if (!contactPersonInput.value.trim()) {
+                contactPersonInput.classList.add('error');
+                isValid = false;
+            }
+            
+            // 验证手机号
+            if (!validatePhone(phoneInput.value.trim())) {
+                phoneInput.classList.add('error');
+                isValid = false;
+            }
+            
+            // 验证密码
+            if (!validatePassword(passwordInput.value.trim())) {
+                passwordInput.classList.add('error');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        /**
+         * 处理注册请求
+         */
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            // 验证表单
+            if (!validateForm()) {
+                showStatusMessage('请检查表单信息，修正错误后重新提交', 'error');
+                return;
+            }
+            
+            // 隐藏之前的状态消息
+            hideStatusMessage();
+            
+            // 设置按钮为加载状态
+            setLoadingState(true);
+            
+            // 获取表单数据并生成企业ID
+            const generatedCompanyId = generateCompanyId();
+            const formData = {
+                companyName: companyNameInput.value.trim(),
+                contactPerson: contactPersonInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                companyId: generatedCompanyId,
+                password: passwordInput.value.trim()
+            };
+            
+            try {
+                // 发送注册请求到后端API
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                // 无论后端响应如何，都显示注册失败
+                // 检测并记录错误原因
+                let errorReason = '未知错误';
+                if (!response.ok) {
+                    errorReason = data.message || `HTTP错误 ${response.status}`;
+                }
+                
+                console.error('注册失败原因:', errorReason, '表单数据:', formData);
+                showStatusMessage('注册失败，请稍后重试', 'error');
+                
+                // 记录错误详情到控制台以便调试
+                console.log('详细错误信息:');
+                console.log('- 响应状态:', response.status, response.statusText);
+                console.log('- 响应数据:', data);
+                console.log('- 生成的企业ID:', generatedCompanyId);
+            } catch (error) {
+                console.error('注册过程中发生错误:', error);
+                showStatusMessage('注册失败，请稍后重试', 'error');
+            } finally {
+                // 恢复按钮状态
+                setLoadingState(false);
+            }
+        }
+        
+        /**
+         * 添加输入框事件监听
+         */
+        function setupInputListeners() {
+            // 为所有输入框添加输入事件，清除错误状态
+            const inputs = [companyNameInput, contactPersonInput, phoneInput, passwordInput];
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('error');
+                });
+                
+                input.addEventListener('blur', function() {
+                    // 失去焦点时进行简单验证
+                    if (this.id === 'phone' && this.value.trim()) {
+                        if (!validatePhone(this.value.trim())) {
+                            this.classList.add('error');
+                        }
+                    } else if (this.id === 'password' && this.value.trim()) {
+                        if (!validatePassword(this.value.trim())) {
+                            this.classList.add('error');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 绑定表单提交事件
+        registerForm.addEventListener('submit', handleRegister);
+        
+        // 设置输入框事件监听
+        setupInputListeners();
+        
+        // 页面加载时检查是否有待审核的注册信息
+        document.addEventListener('DOMContentLoaded', function() {
+            const pendingRegistration = localStorage.getItem('pendingRegistration');
+            if (pendingRegistration) {
+                try {
+                        const parsedData = JSON.parse(pendingRegistration);
+                        // 填充表单数据
+                        companyNameInput.value = parsedData.companyName || '';
+                        contactPersonInput.value = parsedData.contactPerson || '';
+                        phoneInput.value = parsedData.phone || '';
+                    } catch (error) {
+                        console.error('解析待审核注册信息失败:', error);
+                    }
+            }
+        });
+    </script>
+</body>
+</html>

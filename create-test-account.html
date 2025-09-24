@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建TrueMark测试账户</title>
+    <style>
+        /* 全局样式设置 */
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        /* 主容器样式 */
+        .container {
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* 按钮样式 */
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        /* 账户信息区域样式 */
+        .account-info {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            text-align: left;
+            display: none;
+        }
+        
+        /* 消息提示框基础样式 */
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        /* 成功消息样式 */
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            display: block;
+        }
+        
+        /* 错误消息样式 */
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TrueMark 测试账户创建器</h1>
+        <p>点击下方按钮创建一个测试发行方账户，用于登录发行方管理系统。</p>
+        
+        <!-- 创建账户按钮 -->
+        <button id="create-account-btn">创建测试账户</button>
+        
+        <!-- 消息显示区域 -->
+        <div id="message" class="alert"></div>
+        
+        <!-- 账户信息显示区域 -->
+        <div id="account-info" class="account-info">
+            <h3>测试账户信息</h3>
+            <p><strong>公司ID：</strong><span id="company-id">TEST001</span></p>
+            <p><strong>密码：</strong><span id="password">test1234</span></p>
+            <p><strong>公司名称：</strong>测试科技有限公司</p>
+            <p><strong>使用说明：</strong>请使用以上账户信息登录<a href="issuer.html" target="_blank">发行方管理系统</a>。</p>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 创建测试账户功能
+         * 点击按钮时调用后端API创建测试账户，并处理响应结果
+         */
+        document.getElementById('create-account-btn').addEventListener('click', async function() {
+            const messageDiv = document.getElementById('message');
+            const accountInfoDiv = document.getElementById('account-info');
+            const createBtn = this;
+            
+            // 禁用按钮，防止重复点击
+            createBtn.disabled = true;
+            createBtn.textContent = '创建中...';
+            messageDiv.style.display = 'none';
+            
+            try {
+                // 调用后端API创建测试账户
+                const response = await fetch('/api/create-test-account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // 显示成功消息和账户信息
+                    messageDiv.innerHTML = '测试账户创建成功！';
+                    messageDiv.className = 'alert alert-success';
+                    accountInfoDiv.style.display = 'block';
+                } else {
+                    // 显示错误消息
+                    messageDiv.innerHTML = data.message || '创建测试账户失败，请稍后重试。';
+                    messageDiv.className = 'alert alert-error';
+                }
+                
+            } catch (error) {
+                console.error('创建账户时出错:', error);
+                messageDiv.innerHTML = '创建测试账户失败，请检查网络连接后重试。';
+                messageDiv.className = 'alert alert-error';
+            } finally {
+                // 恢复按钮状态
+                createBtn.disabled = false;
+                createBtn.textContent = '创建测试账户';
+            }
+        });
+        
+        /**
+         * 页面加载时检查测试账户
+         * 页面加载完成后自动检查是否已存在测试账户，如果存在则显示账户信息
+         */
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // 调用后端API检查测试账户
+                const response = await fetch('/api/check-test-account', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.exists) {
+                    // 显示账户信息
+                    document.getElementById('account-info').style.display = 'block';
+                }
+            } catch (err) {
+                // 如果检查失败，忽略错误
+                console.log('检查测试账户时出错:', err);
+            }
+        });
+    </script>
+</body>
+</html>
