@@ -936,9 +936,12 @@
             return code;
         }
         
-        // 退出登录按钮功能 - 直接跳转到登录页面
+        // 退出登录按钮功能 - 清除登录状态并跳转到登录页面
         document.getElementById('logout-btn').addEventListener('click', function() {
-            // 直接跳转到登录页面
+            // 清除localStorage中的登录状态信息
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userInfo');
+            // 跳转到登录页面
             window.location.href = 'index.html';
         });
         
