@@ -472,8 +472,8 @@
     </div>
 
     <script>
-        // API基础URL
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // API基础URL - 使用相对路径，支持任何部署环境
+        const API_BASE_URL = '/api';
         
         // 全局凭证存储，用于在前端管理凭证数据
         let credentialsStore = [
