@@ -192,6 +192,27 @@
             to { transform: rotate(360deg); }
         }
         
+        /* 管理员登录链接样式 */
+        .admin-login-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .admin-login-link:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
         /* 加载覆盖层 - 用于在异步操作期间显示加载状态 */
         .loading-overlay {
             position: absolute;
@@ -232,6 +253,9 @@
     </style>
 </head>
 <body>
+    <!-- 管理员登录链接 -->
+    <a href="admin/login.html" class="admin-login-link">管理员登录</a>
+    
     <!-- 页面标题 -->
     <h1>印绩</h1>
     

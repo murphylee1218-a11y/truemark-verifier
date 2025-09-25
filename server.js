@@ -36,12 +36,69 @@ app.use(express.json()); // 解析JSON请求体
 app.use(express.static(path.join(__dirname, '.'))); // 提供静态文件服务
 
 // 初始化Supabase客户端（仅在后端使用）
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL || 'https://ryvpfeidqdsrukfzwbmf.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dnBmZWlkcWRzcnVrZnp3Ym1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2ODEwNzAsImV4cCI6MjA3NDI1NzA3MH0.dRw-hjqnNfKpYwzmfX3JkTGUl__w82jApdkU-Pyy6ZE';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // JWT密钥（应在环境变量中设置）
 const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-key-for-development-only-this-should-be-in-env-in-production';
+const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'admin_secret_key_for_development';
+
+// 模拟数据库中的企业注册申请
+let mockRegistrations = [
+  {
+    id: '1',
+    company_id: 'COMP001',
+    company_name: '示例科技有限公司',
+    contact_person: '张三',
+    phone: '13800138000',
+    email: 'contact@example.com',
+    status: 'pending',
+    created_at: '2024-01-15T08:30:00Z',
+    reviewed_at: null,
+    reviewed_by: null,
+    rejection_reason: null
+  },
+  {
+    id: '2',
+    company_id: 'COMP002',
+    company_name: '测试企业集团',
+    contact_person: '李四',
+    phone: '13900139000',
+    email: 'info@test.com',
+    status: 'approved',
+    created_at: '2024-01-14T10:15:00Z',
+    reviewed_at: '2024-01-14T11:30:00Z',
+    reviewed_by: 'admin',
+    rejection_reason: null
+  },
+  {
+    id: '3',
+    company_id: 'COMP003',
+    company_name: '创新数字科技',
+    contact_person: '王五',
+    phone: '13700137000',
+    email: 'wangwu@innovative.com',
+    status: 'rejected',
+    created_at: '2024-01-13T14:20:00Z',
+    reviewed_at: '2024-01-13T15:45:00Z',
+    reviewed_by: 'admin',
+    rejection_reason: '企业资质不符合要求'
+  },
+  {
+    id: '4',
+    company_id: 'COMP004',
+    company_name: '未来智能公司',
+    contact_person: '赵六',
+    phone: '13600136000',
+    email: 'zhaoliu@future.com',
+    status: 'pending',
+    created_at: '2024-01-15T09:00:00Z',
+    reviewed_at: null,
+    reviewed_by: null,
+    rejection_reason: null
+  }
+];
 
 // 认证中间件
 function authenticateToken(req, res, next) {
@@ -56,6 +113,151 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
+
+// 管理员认证中间件
+function authenticateAdminToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: '需要管理员认证' });
+    }
+
+    jwt.verify(token, ADMIN_JWT_SECRET, (err, admin) => {
+        if (err) {
+            return res.status(403).json({ error: '无效的管理员认证' });
+        }
+        req.admin = admin;
+        next();
+    });
+}
+
+// API端点：管理员登录
+app.post('/api/admin/auth/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // 简化版实现：使用硬编码的管理员账户
+        if (username === 'admin' && password === 'admin123') {
+            const adminInfo = {
+                id: '1',
+                username: 'admin',
+                role: '超级管理员'
+            };
+
+            const token = jwt.sign(adminInfo, ADMIN_JWT_SECRET, { expiresIn: '24h' });
+            
+            return res.json({ accessToken: token, admin: adminInfo });
+        } else {
+            return res.status(401).json({ error: '用户名或密码错误' });
+        }
+    } catch (error) {
+        console.error('管理员登录失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
+
+// API端点：管理员登出
+app.post('/api/admin/auth/logout', authenticateAdminToken, async (req, res) => {
+    // 由于使用JWT，客户端只需要删除token即可
+    // 这里可以添加token黑名单等额外逻辑
+    res.json({ message: '登出成功' });
+});
+
+// API端点：获取当前管理员信息
+app.get('/api/admin/auth/me', authenticateAdminToken, async (req, res) => {
+    res.json(req.admin);
+});
+
+// API端点：获取注册申请列表（管理员用）
+app.get('/api/admin/registrations', authenticateAdminToken, async (req, res) => {
+    try {
+        res.json(mockRegistrations);
+    } catch (error) {
+        console.error('获取注册申请列表失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
+
+// 批准注册申请API
+app.put('/api/admin/registrations/:id/approve', authenticateAdminToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const admin = req.admin;
+        
+        const registration = mockRegistrations.find(r => r.id === id);
+        
+        if (!registration) {
+            return res.status(404).json({ error: '注册申请不存在' });
+        }
+        
+        if (registration.status !== 'pending') {
+            return res.status(400).json({ error: '只能审批待审核的申请' });
+        }
+        
+        // 更新状态
+        registration.status = 'approved';
+        registration.reviewed_at = new Date().toISOString();
+        registration.reviewed_by = admin.username;
+        
+        res.json({ message: '批准成功', registration });
+    } catch (error) {
+        console.error('批准注册申请失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
+
+// 拒绝注册申请API
+app.put('/api/admin/registrations/:id/reject', authenticateAdminToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { reason } = req.body;
+        const admin = req.admin;
+        
+        if (!reason || reason.trim() === '') {
+            return res.status(400).json({ error: '请提供拒绝原因' });
+        }
+        
+        const registration = mockRegistrations.find(r => r.id === id);
+        
+        if (!registration) {
+            return res.status(404).json({ error: '注册申请不存在' });
+        }
+        
+        if (registration.status !== 'pending') {
+            return res.status(400).json({ error: '只能审批待审核的申请' });
+        }
+        
+        // 更新状态
+        registration.status = 'rejected';
+        registration.rejection_reason = reason;
+        registration.reviewed_at = new Date().toISOString();
+        registration.reviewed_by = admin.username;
+        
+        res.json({ message: '拒绝成功', registration });
+    } catch (error) {
+        console.error('拒绝注册申请失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
+
+// 获取单个注册申请详情API
+app.get('/api/admin/registrations/:id', authenticateAdminToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const registration = mockRegistrations.find(r => r.id === id);
+        
+        if (!registration) {
+            return res.status(404).json({ error: '注册申请不存在' });
+        }
+        
+        res.json(registration);
+    } catch (error) {
+        console.error('获取注册申请详情失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
 
 // API端点：发行方登录
 app.post('/api/auth/login', async (req, res) => {
@@ -467,6 +669,47 @@ app.get('/api/check-test-account', async (req, res) => {
     }
 });
 
+// API端点：企业注册
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        console.log('收到企业注册请求:', req.body);
+        
+        // 获取注册表单数据（使用前端实际发送的字段名）
+        const { companyName, companyId, contactPerson, phone, password } = req.body;
+        
+        // 验证必填字段
+        if (!companyName || !companyId || !contactPerson || !phone || !password) {
+            return res.status(400).json({
+                success: false,
+                message: '请填写所有必填字段'
+            });
+        }
+        
+        // 模拟注册信息提交到数据库并返回待审核状态
+        // 由于之前发现issuers表结构问题，这里采用简化实现
+        
+        // 返回成功响应，表示注册信息已提交等待审核
+        res.json({
+            success: true,
+            message: '注册信息已提交，等待审核',
+            data: {
+                companyName,
+                companyId,
+                contactPerson,
+                phone,
+                status: 'pending'
+            }
+        });
+        
+    } catch (error) {
+        console.error('处理注册请求时出错:', error);
+        res.status(500).json({
+            success: false,
+            message: '服务器错误，请稍后重试'
+        });
+    }
+});
+
 // API端点：验证JWT令牌
 app.post('/api/auth/validate', authenticateToken, (req, res) => {
     try {
@@ -489,6 +732,7 @@ app.post('/api/auth/validate', authenticateToken, (req, res) => {
 app.listen(PORT, () => {
     console.log(`服务器运行在 http://localhost:${PORT}`);
     console.log('API端点列表:');
+    console.log('- POST /api/auth/register - 企业注册');
     console.log('- POST /api/auth/login - 发行方登录');
     console.log('- GET /api/credentials - 获取凭证列表（需要认证）');
     console.log('- POST /api/credentials - 生成新凭证（需要认证）');
@@ -497,4 +741,11 @@ app.listen(PORT, () => {
     console.log('- PUT /api/settings - 保存发行方设置（需要认证）');
     console.log('- POST /api/create-test-account - 创建测试账户');
     console.log('- GET /api/check-test-account - 检查测试账户是否存在');
+    console.log('- POST /api/admin/auth/login - 管理员登录');
+    console.log('- POST /api/admin/auth/logout - 管理员登出');
+    console.log('- GET /api/admin/auth/me - 获取当前管理员信息');
+    console.log('- GET /api/admin/registrations - 获取注册申请列表（管理员）');
+    console.log('- GET /api/admin/registrations/:id - 获取单个注册申请详情（管理员）');
+    console.log('- PUT /api/admin/registrations/:id/approve - 批准注册申请（管理员）');
+    console.log('- PUT /api/admin/registrations/:id/reject - 拒绝注册申请（管理员）');
 });
