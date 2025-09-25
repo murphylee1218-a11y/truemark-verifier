@@ -701,9 +701,9 @@
         
         // 页面初始化
         document.addEventListener('DOMContentLoaded', async () => {
-            // 检查管理员登录状态
+            // 检查管理员登录状态 - 使用绝对路径确保部署兼容性
             if (!localStorage.getItem('adminToken')) {
-                window.location.href = 'login.html';
+                window.location.href = '/admin/login.html';
                 return;
             }
             

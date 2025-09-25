@@ -199,6 +199,10 @@
             <input type="password" id="password" placeholder="请输入管理员密码">
         </div>
         
+        <div style="text-align: center; margin-bottom: 15px; font-size: 12px; color: #666;">
+            提示：测试账户用户名: admin, 密码: admin123
+        </div>
+        
         <button id="login-btn" class="btn-primary">
             <span class="loading-spinner" style="display: none;"></span>
             管理员登录
@@ -309,9 +313,9 @@
                         
                         showSuccess('登录成功，正在跳转...');
                         
-                        // 跳转到管理后台首页
+                        // 跳转到管理后台首页 - 使用绝对路径确保部署兼容性
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            window.location.href = '/admin/index.html';
                         }, 1000);
                     } else {
                         // 登录失败，显示错误消息
