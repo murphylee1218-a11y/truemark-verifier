@@ -20,7 +20,18 @@ const app = express();
 const PORT = process.env.PORT || 3000; // 服务器监听端口 - 使用环境变量PORT或默认3000
 
 // 中间件配置
-app.use(cors()); // 启用跨域资源共享
+// 配置CORS以允许所有来源、方法和必要的头部信息
+app.use(cors({
+  origin: '*', // 允许所有来源访问，生产环境可以设置为特定域名
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // 允许的HTTP方法
+  allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Requested-With'], // 允许的请求头
+  credentials: true, // 允许携带凭证
+  maxAge: 86400 // 预检请求结果缓存时间（秒）
+}));
+
+// 处理预检请求
+app.options('*', cors());
+
 app.use(express.json()); // 解析JSON请求体
 app.use(express.static(path.join(__dirname, '.'))); // 提供静态文件服务
 
