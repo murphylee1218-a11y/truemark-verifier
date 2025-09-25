@@ -1,0 +1,43 @@
+<!-- about.wxml - 关于我们页面 -->
+<view class="container">
+  <view class="header">
+    <text class="title">关于我们</text>
+  </view>
+
+  <view class="content">
+    <!-- 应用Logo -->
+    <view class="logo-container">
+      <view class="logo">
+        <text class="logo-text">印绩</text>
+      </view>
+    </view>
+
+    <!-- 应用信息 -->
+    <view class="app-info">
+      <text class="app-name">{{appInfo.name}}</text>
+      <text class="app-version">版本 {{appInfo.version}}</text>
+    </view>
+
+    <!-- 功能介绍 -->
+    <view class="intro-section">
+      <text class="intro-title">功能介绍</text>
+      <view class="intro-content">
+        <text class="intro-item">• 快速验证企业员工凭证</text>
+        <text class="intro-item">• 扫描二维码便捷操作</text>
+        <text class="intro-item">• 详细的验证历史记录</text>
+        <text class="intro-item">• 安全可靠的身份认证</text>
+      </view>
+    </view>
+
+    <!-- 联系我们 -->
+    <view class="contact-section">
+      <text class="contact-title">联系我们</text>
+      <text class="contact-info">邮箱: {{appInfo.contact}}</text>
+    </view>
+
+    <!-- 版权信息 -->
+    <view class="copyright">
+      <text>{{appInfo.copyright}}</text>
+    </view>
+  </view>
+</view>

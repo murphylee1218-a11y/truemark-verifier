@@ -1,0 +1,17 @@
+.container {
+  padding: 20rpx;
+}
+
+.title {
+  font-size: 32rpx;
+  margin-bottom: 20rpx;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 200rpx;
+  border: 1px solid #ddd;
+  padding: 10rpx;
+  margin-bottom: 20rpx;
+  border-radius: 8rpx;
+}

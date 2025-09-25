@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>印绩企业端管理系统</title>
+    <style>
+        /* 简化的样式 */
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { border: 1px solid #ddd; padding: 20px; }
+        button { background-color: #3498db; color: white; border: none; padding: 10px 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>印绩企业端管理系统</h1>
+        <!-- 验证凭证面板 -->
+        <div id="verifier-content">
+            <h2>凭证验证</h2>
+            <div class="card">
+                <div id="verification-message" style="display: none;"></div>
+                <div class="verification-container">
+                    <div class="verification-method">
+                        <h3>输入验证码验证</h3>
+                        <input type="text" id="verification-code" placeholder="请输入8位验证码">
+                        <button id="verify-btn">验证</button>
+                    </div>
+                    <div class="verification-method">
+                        <h3>扫码验证</h3>
+                        <button id="start-scan-btn">开始扫码</button>
+                        <div id="qr-scan-area"></div>
+                    </div>
+                </div>
+                <div id="verification-result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API基础URL
+        const API_BASE_URL = '/api';
+        
+        // 全局凭证存储
+        let credentialsStore = [
+            {
+                employee_name: "张三",
+                job_title: "软件工程师",
+                employment_start_date: "2022-01-15",
+                employment_end_date: null,
+                verification_code: "ABC12345",
+                verified: true,
+                company_name: "示例企业"
+            }
+        ];
+        
+        // 简化的API请求函数
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            // 模拟数据响应
+            if (endpoint === '/api/verify' && method === 'POST') {
+                const code = data.code;
+                const credential = credentialsStore.find(c => c.verification_code === code);
+                return { valid: !!credential, ...credential };
+            }
+            return { success: true };
+        }
+        
+        // 验证凭证功能
+        function setupCredentialVerification() {
+            document.getElementById('verify-btn').addEventListener('click', async function() {
+                const code = document.getElementById('verification-code').value.trim();
+                console.log('验证代码:', code);
+                // 模拟验证成功
+                const result = { valid: true, employee_name: "测试用户", job_title: "测试职位" };
+                console.log('验证结果:', result);
+            });
+        }
+        
+        // 扫码验证功能
+        function setupQRScanner() {
+            let scannerActive = false;
+            
+            document.getElementById('start-scan-btn').addEventListener('click', function() {
+                if (!scannerActive) {
+                    scannerActive = true;
+                    this.textContent = '停止扫码';
+                    console.log('启动扫码器');
+                } else {
+                    scannerActive = false;
+                    this.textContent = '开始扫码';
+                    console.log('停止扫码器');
+                }
+            });
+        }
+        
+        // 初始化
+        setupCredentialVerification();
+        setupQRScanner();
+    </script>
+</body>
+</html>

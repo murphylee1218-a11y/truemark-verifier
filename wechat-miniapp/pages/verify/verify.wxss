@@ -1,0 +1,252 @@
+/* verify.wxss - 凭证验证页面样式 */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 页面标题 */
+.header {
+  padding: 30rpx 40rpx;
+  background-color: #ffffff;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+/* 验证表单区域 */
+.form-section {
+  padding: 0 40rpx;
+}
+
+.input-container {
+  background-color: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.label {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 20rpx;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  height: 90rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 34rpx;
+  margin-right: 20rpx;
+}
+
+.scan-btn {
+  min-width: 160rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  padding: 0;
+  font-size: 32rpx;
+  background-color: #3498db;
+  color: #ffffff;
+  border-radius: 12rpx;
+}
+
+.scan-btn:active {
+  background-color: #2980b9;
+}
+
+.error-msg {
+  color: #e74c3c;
+  font-size: 28rpx;
+  margin-top: 16rpx;
+  display: block;
+}
+
+/* 按钮组 */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+
+.verify-btn {
+  flex: 1;
+  margin-right: 20rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  padding: 0;
+  font-size: 34rpx;
+  background-color: #2ecc71;
+  color: #ffffff;
+  border-radius: 12rpx;
+}
+
+.verify-btn:active {
+  background-color: #27ae60;
+}
+
+.clear-btn {
+  flex: 1;
+  height: 90rpx;
+  line-height: 90rpx;
+  padding: 0;
+  font-size: 34rpx;
+  color: #666666;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+}
+
+.clear-btn:active {
+  background-color: #f5f5f5;
+}
+
+/* 说明文字 */
+.tips {
+  padding: 20rpx;
+  background-color: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.tips-text {
+  display: block;
+  font-size: 28rpx;
+  color: #999999;
+  line-height: 1.6;
+  margin-bottom: 10rpx;
+}
+
+.tips-text:last-child {
+  margin-bottom: 0;
+}
+
+/* 验证结果区域 */
+.result-section {
+  padding: 0 40rpx;
+}
+
+.result-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.status-icon {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 80rpx;
+  background-color: #d5f4e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.status-icon.invalid {
+  background-color: #fce5e5;
+}
+
+.icon-text {
+  font-size: 100rpx;
+  color: #27ae60;
+}
+
+.icon-text.invalid {
+  color: #e74c3c;
+}
+
+.status-text {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #27ae60;
+}
+
+.status-text.invalid {
+  color: #e74c3c;
+}
+
+/* 结果卡片 */
+.result-card {
+  background-color: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-item {
+  display: flex;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.card-item:last-child {
+  border-bottom: none;
+}
+
+.item-label {
+  width: 200rpx;
+  font-size: 32rpx;
+  color: #666666;
+}
+
+.item-value {
+  flex: 1;
+  font-size: 32rpx;
+  color: #333333;
+  text-align: right;
+}
+
+/* 结果操作按钮 */
+.result-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.retry-btn {
+  flex: 1;
+  margin-right: 20rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  padding: 0;
+  font-size: 34rpx;
+  color: #666666;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+}
+
+.retry-btn:active {
+  background-color: #f5f5f5;
+}
+
+.history-btn {
+  flex: 1;
+  height: 90rpx;
+  line-height: 90rpx;
+  padding: 0;
+  font-size: 34rpx;
+  background-color: #3498db;
+  color: #ffffff;
+  border-radius: 12rpx;
+}
+
+.history-btn:active {
+  background-color: #2980b9;
+}

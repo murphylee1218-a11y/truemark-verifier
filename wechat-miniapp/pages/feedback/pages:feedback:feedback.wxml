@@ -1,0 +1,15 @@
+<view class="container">
+  <view class="feedback-section">
+    <textarea 
+      value="{{feedbackText}}" 
+      placeholder="请输入您的宝贵意见或建议..." 
+      bindinput="onInputFeedback"
+      class="feedback-textarea"
+      maxlength="500"
+    />
+    <text class="word-count">{{feedbackText.length}}/500</text>
+  </view>
+  
+  <view class="contact-section">
+    <input 
+      value="{{contact}}" 

@@ -1,0 +1,62 @@
+<!-- detail.wxml - 凭证详情页面 -->
+<view class="container">
+  <view class="header">
+    <text class="title">凭证详情</text>
+  </view>
+
+  <view class="content" wx:if="{{!isLoading}}">
+    <view class="result-header">
+      <view class="status-icon" wx:if="{{credentialInfo && credentialInfo.isValid}}">
+        <text class="icon-text">✓</text>
+      </view>
+      <view class="status-icon invalid" wx:else>
+        <text class="icon-text invalid">✗</text>
+      </view>
+      <text class="status-text" wx:if="{{credentialInfo && credentialInfo.isValid}}">
+        验证通过
+      </text>
+      <text class="status-text invalid" wx:else>
+        验证失败
+      </text>
+    </view>
+
+    <view class="detail-card">
+      <view class="card-item">
+        <text class="item-label">凭证编号</text>
+        <text class="item-value">{{credentialInfo.credentialId || 'N/A'}}</text>
+      </view>
+      <view class="card-item">
+        <text class="item-label">验证码</text>
+        <text class="item-value">{{verificationCode}}</text>
+      </view>
+      <view class="card-item">
+        <text class="item-label">员工姓名</text>
+        <text class="item-value">{{credentialInfo.employeeName || 'N/A'}}</text>
+      </view>
+      <view class="card-item">
+        <text class="item-label">所属公司</text>
+        <text class="item-value">{{credentialInfo.companyName || 'N/A'}}</text>
+      </view>
+      <view class="card-item">
+        <text class="item-label">职位</text>
+        <text class="item-value">{{credentialInfo.position || 'N/A'}}</text>
+      </view>
+      <view class="card-item">
+        <text class="item-label">签发时间</text>
+        <text class="item-value">{{credentialInfo.issueDate || 'N/A'}}</text>
+      </view>
+      <view class="card-item">
+        <text class="item-label">有效期至</text>
+        <text class="item-value">{{credentialInfo.expiryDate || '永久'}}</text>
+      </view>
+      <view class="card-item">
+        <text class="item-label">验证时间</text>
+        <text class="item-value">{{credentialInfo.verificationTime || 'N/A'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="loading-container" wx:else>
+    <loading>加载中...</loading>
+  </view>
+</view>

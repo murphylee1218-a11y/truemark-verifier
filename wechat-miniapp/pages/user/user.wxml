@@ -1,0 +1,69 @@
+<!-- user.wxml - 用户中心页面 -->
+<view class="container">
+  <!-- 用户信息区域 -->
+  <view class="user-info-section" bindtap="viewUserInfoDetail">
+    <image 
+      class="avatar" 
+      src="{{userInfo.avatarUrl || '/images/default_avatar.png'}}" 
+      mode="aspectFill"
+    ></image>
+    <view class="user-details">
+      <text class="nickname">{{userInfo.nickName || '用户'}}</text>
+      <text class="user-id">用户ID: {{userInfo.openid || 'N/A'}}</text>
+    </view>
+    <view class="arrow">
+      <text>></text>
+    </view>
+  </view>
+
+  <!-- 功能菜单区域 -->
+  <view class="menu-section">
+    <view class="menu-group">
+      <view 
+        class="menu-item"
+        wx:for="{{menuItems}}"
+        wx:key="id"
+        data-url="{{item.url}}"
+        bindtap="onMenuItemTap"
+      >
+        <view class="menu-icon">
+          <image src="{{item.icon}}" mode="aspectFit"></image>
+        </view>
+        <text class="menu-title">{{item.title}}</text>
+        <view class="menu-arrow">
+          <text>></text>
+        </view>
+      </view>
+    </view>
+
+    <view class="menu-group">
+      <view class="menu-item" bindtap="clearCache">
+        <view class="menu-icon">
+          <image src="/images/cache_icon.png" mode="aspectFit"></image>
+        </view>
+        <text class="menu-title">清除缓存</text>
+        <view class="menu-arrow">
+          <text>></text>
+        </view>
+      </view>
+      <view class="menu-item" bindtap="checkUpdate">
+        <view class="menu-icon">
+          <image src="/images/update_icon.png" mode="aspectFit"></image>
+        </view>
+        <text class="menu-title">检查更新</text>
+        <view class="menu-arrow">
+          <text>></text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 应用信息 -->
+  <view class="app-info">
+    <text class="version">版本 {{appVersion}}</text>
+    <text class="copyright">© 2023 印绩凭证验证系统</text>
+  </view>
+
+  <!-- 退出登录按钮 -->
+  <button class="logout-btn" type="warn" bindtap="logout">退出登录</button>
+</view>

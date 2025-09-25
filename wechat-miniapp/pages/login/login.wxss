@@ -1,0 +1,98 @@
+/* login.wxss - 登录页面样式 */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f8f8;
+}
+
+.login-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 60rpx;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 80rpx;
+}
+
+.logo {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 40rpx;
+  background-color: #3498db;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30rpx;
+  box-shadow: 0 10rpx 30rpx rgba(52, 152, 219, 0.3);
+}
+
+.logo-text {
+  font-size: 64rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.slogan {
+  font-size: 36rpx;
+  color: #666666;
+}
+
+.form-container {
+  width: 100%;
+}
+
+.error-msg {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 40rpx;
+  font-size: 28rpx;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #c62828;
+}
+
+.login-btn {
+  background-color: #3498db;
+  color: #ffffff;
+  font-size: 36rpx;
+  padding: 32rpx 0;
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 6rpx 16rpx rgba(52, 152, 219, 0.3);
+}
+
+.login-btn:active {
+  background-color: #2980b9;
+}
+
+.login-btn[disabled] {
+  background-color: #a0c4e2;
+  box-shadow: none;
+}
+
+.notice {
+  text-align: center;
+  font-size: 28rpx;
+  color: #999999;
+  line-height: 1.5;
+}
+
+.link {
+  color: #3498db;
+}

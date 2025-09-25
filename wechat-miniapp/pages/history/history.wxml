@@ -1,0 +1,62 @@
+<!-- history.wxml - 验证历史页面 -->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="header">
+    <text class="title">验证历史</text>
+    <text class="clear-btn" bindtap="clearAllHistory">清除</text>
+  </view>
+
+  <!-- 历史记录列表 -->
+  <view class="history-list">
+    <!-- 历史记录项 -->
+    <view 
+      class="history-item"
+      wx:for="{{historyList}}"
+      wx:key="index"
+      data-item="{{item}}"
+      bindtap="viewCredentialDetail"
+    >
+      <view class="item-header">
+        <view class="company-info">
+          <text class="company-name">{{item.companyName || '未知公司'}}</text>
+          <view class="status-badge" wx:if="{{item.isValid}}">
+            <text class="status-text">验证通过</text>
+          </view>
+          <view class="status-badge invalid" wx:else>
+            <text class="status-text invalid">验证失败</text>
+          </view>
+        </view>
+        <text class="verify-time">{{item.verificationTime || ''}}</text>
+      </view>
+      <view class="item-content">
+        <text class="employee-name">{{item.employeeName || '未知员工'}}</text>
+        <text class="position">{{item.position || '未知职位'}}</text>
+      </view>
+      <view class="item-footer">
+        <text class="verification-code">验证码: {{item.verificationCode || ''}}</text>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{historyList.length === 0 && !isLoading}}">
+      <image class="empty-icon" src="/images/empty_history.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无验证历史</text>
+      <button class="go-verify-btn" type="primary" bindtap="goToVerify">去验证</button>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{isLoading && historyList.length > 0}}">
+      <loading class="loading">加载中...</loading>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{!hasMore && historyList.length > 0}}">
+      <text class="no-more-text">没有更多记录了</text>
+    </view>
+  </view>
+
+  <!-- 下拉刷新提示 -->
+  <view class="refresh-tip" wx:if="{{isRefreshing}}">
+    <loading class="refresh-loading">刷新中...</loading>
+  </view>
+</view>

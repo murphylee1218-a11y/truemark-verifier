@@ -1,0 +1,103 @@
+/* detail.wxss - 凭证详情页面样式 */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.header {
+  padding: 30rpx 40rpx;
+  background-color: #ffffff;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.content {
+  padding: 0 40rpx 40rpx;
+}
+
+.result-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.status-icon {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 80rpx;
+  background-color: #d5f4e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.status-icon.invalid {
+  background-color: #fce5e5;
+}
+
+.icon-text {
+  font-size: 100rpx;
+  color: #27ae60;
+}
+
+.icon-text.invalid {
+  color: #e74c3c;
+}
+
+.status-text {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #27ae60;
+}
+
+.status-text.invalid {
+  color: #e74c3c;
+}
+
+.detail-card {
+  background-color: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-item {
+  display: flex;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.card-item:last-child {
+  border-bottom: none;
+}
+
+.item-label {
+  width: 200rpx;
+  font-size: 32rpx;
+  color: #666666;
+}
+
+.item-value {
+  flex: 1;
+  font-size: 32rpx;
+  color: #333333;
+  text-align: right;
+  word-break: break-all;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500rpx;
+}
