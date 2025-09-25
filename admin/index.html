@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>印绩 - 管理后台</title>
+    <style>
+        /* 全局样式 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            height: 100vh;
+            display: flex;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #3a1c71 0%, #d76d77 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .sidebar-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .sidebar-title {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 主内容区域样式 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            height: 60px;
+            background-color: white;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #3a1c71;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .content-wrapper {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* 统计卡片样式 */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .stat-icon.approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .stat-icon.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .stat-icon.total {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* 状态标签样式 */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge.approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background-color: #3a1c71;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #d62f6f;
+        }
+        
+        /* 操作按钮容器 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* 小按钮样式 */
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+        
+        /* 危险按钮 */
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        /* 成功按钮 */
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        
+        /* 加载状态样式 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #3a1c71;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .nav-text {
+                display: none;
+            }
+            
+            .nav-icon {
+                margin-right: 0;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-wrapper {
+                padding: 20px;
+            }
+        }
+        
+        /* 操作按钮组样式 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">印绩</div>
+            <div class="sidebar-title">管理后台</div>
+        </div>
+        
+        <div class="nav-item active" data-page="dashboard">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">数据概览</span>
+        </div>
+        
+        <div class="nav-item" data-page="registrations">
+            <span class="nav-icon">✅</span>
+            <span class="nav-text">注册审核</span>
+        </div>
+        
+        <div class="nav-item" data-page="companies">
+            <span class="nav-icon">🏢</span>
+            <span class="nav-text">企业管理</span>
+        </div>
+        
+        <div class="nav-item" data-page="credentials">
+            <span class="nav-icon">📄</span>
+            <span class="nav-text">凭证管理</span>
+        </div>
+        
+        <div class="nav-item" data-page="verification-limits">
+            <span class="nav-icon">🔒</span>
+            <span class="nav-text">验证次数配置</span>
+        </div>
+        
+        <div class="nav-item" data-page="permissions">
+            <span class="nav-icon">👥</span>
+            <span class="nav-text">权限管理</span>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logout-btn">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-text">退出登录</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="header-title" id="page-title">数据概览</div>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div class="user-name" id="admin-name">管理员</div>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content-wrapper">
+            <!-- 数据概览 -->
+            <div id="dashboard-content">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon pending">⏳</div>
+                        <div class="stat-info">
+                            <h3 id="pending-count">0</h3>
+                            <p>待审核企业</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon approved">✅</div>
+                        <div class="stat-info">
+                            <h3 id="approved-count">0</h3>
+                            <p>已通过企业</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon rejected">❌</div>
+                        <div class="stat-info">
+                            <h3 id="rejected-count">0</h3>
+                            <p>已拒绝企业</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon total">📊</div>
+                        <div class="stat-info">
+                            <h3 id="total-count">0</h3>
+                            <p>总企业数</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">待审核企业列表</h3>
+                        <button class="btn btn-primary" onclick="showPage('registrations')">查看全部</button>
+                    </div>
+                    
+                    <div id="pending-list" class="loading">
+                        <div class="loading-spinner"></div>
+                        加载中...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 注册审核页面 (初始隐藏) -->
+            <div id="registrations-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">企业注册审核</h3>
+                    </div>
+                    
+                    <div id="registrations-list" class="loading">
+                        <div class="loading-spinner"></div>
+                        加载中...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 企业管理页面 (初始隐藏) -->
+            <div id="companies-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">企业管理</h3>
+                    </div>
+                    
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <input type="text" id="company-search" placeholder="搜索企业名称" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; flex: 1; max-width: 300px;">
+                            <button class="btn btn-primary" onclick="searchCompanies()">搜索</button>
+                        </div>
+                        
+                        <div id="companies-list" class="loading">
+                            <div class="loading-spinner"></div>
+                            加载中...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 凭证管理页面 (初始隐藏) -->
+    <div id="credentials-content" style="display: none;">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">凭证管理</h3>
+            </div>
+            
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <select id="credentials-company" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; flex: 1; max-width: 200px;">
+                        <option value="">所有企业</option>
+                    </select>
+                    <input type="text" id="credentials-search" placeholder="搜索凭证ID或名称" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; flex: 1; max-width: 300px;">
+                    <button class="btn btn-primary" onclick="searchCredentials()">搜索</button>
+                </div>
+                
+                <div id="credentials-list" class="loading">
+                    <div class="loading-spinner"></div>
+                    加载中...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 验证次数配置页面 (初始隐藏) -->
+    <div id="verification-limits-content" style="display: none;">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">全局验证次数设置</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="max-verifications">单次凭证最大验证次数</label>
+                    <input type="number" id="max-verifications" min="0" max="9999" placeholder="请输入最大验证次数">
+                    <small class="form-text">设置为0表示不限制验证次数</small>
+                </div>
+                <div class="form-group">
+                    <label for="verification-window">验证窗口（小时）</label>
+                    <input type="number" id="verification-window" min="1" max="168" placeholder="请输入验证窗口时间">
+                    <small class="form-text">在该时间范围内统计验证次数</small>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="enable-notifications">
+                        启用超限通知
+                    </label>
+                    <small class="form-text">当验证次数超过限制时发送通知</small>
+                </div>
+                <button id="save-limits-btn" class="btn btn-primary">保存配置</button>
+                <div id="limits-message" class="message"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">验证统计</h3>
+            </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 id="today-verifications">0</h3>
+                        <p>今日验证次数</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <h3 id="month-verifications">0</h3>
+                        <p>本月验证次数</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h3 id="limit-exceeded">0</h3>
+                        <p>超限次数</p>
+                    </div>
+                </div>
+              </div>
+         </div>
+     </div>
+     
+     <!-- 权限管理页面 (初始隐藏) -->
+     <div id="permissions-content" style="display: none;">
+         <div class="card">
+             <div class="card-header">
+                 <h3 class="card-title">用户管理</h3>
+                 <button id="add-user-btn" class="btn btn-primary">添加用户</button>
+             </div>
+             <div class="table-responsive">
+                 <table class="data-table" id="users-table">
+                     <thead>
+                         <tr>
+                             <th>用户名</th>
+                             <th>邮箱</th>
+                             <th>角色</th>
+                             <th>创建时间</th>
+                             <th>状态</th>
+                             <th>操作</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         <!-- 用户数据将通过JavaScript动态生成 -->
+                     </tbody>
+                 </table>
+             </div>
+             <div id="permissions-message" class="message"></div>
+         </div>
+         
+         <div class="card">
+             <div class="card-header">
+                 <h3 class="card-title">角色定义</h3>
+             </div>
+             <div class="role-cards">
+                 <div class="role-card">
+                     <h4>管理员</h4>
+                     <p>拥有系统的所有权限，包括用户管理和系统配置</p>
+                 </div>
+                 <div class="role-card">
+                     <h4>操作员</h4>
+                     <p>可以审核注册、管理凭证和查看数据</p>
+                 </div>
+                 <div class="role-card">
+                     <h4>查看者</h4>
+                     <p>只能查看数据和统计信息，无操作权限</p>
+                 </div>
+             </div>
+         </div>
+     </div>
+            
+
+            
+
+        </div>
+    </div>
+    
+    <script>
+        // 获取页面元素
+        const navItems = document.querySelectorAll('.nav-item');
+        const logoutBtn = document.getElementById('logout-btn');
+        const adminName = document.getElementById('admin-name');
+        const pageTitle = document.getElementById('page-title');
+        
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 检查管理员登录状态
+            if (!localStorage.getItem('adminToken')) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // 加载管理员信息
+            try {
+                const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
+                if (adminInfo) {
+                    adminName.textContent = adminInfo.username || '管理员';
+                }
+            } catch (error) {
+                console.error('解析管理员信息失败:', error);
+            }
+            
+            // 加载仪表板数据
+            loadDashboardData();
+            loadPendingList();
+        });
+        
+        // 显示指定页面
+        function showPage(pageId) {
+            // 隐藏所有内容区域
+            document.querySelectorAll('[id$="-content"]').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // 显示选中的内容区域
+            document.getElementById(`${pageId}-content`).style.display = 'block';
+            
+            // 更新导航栏激活状态
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageId) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // 更新页面标题
+            const titles = {
+                'dashboard': '数据概览',
+                'registrations': '企业注册审核',
+                'companies': '企业管理',
+                'credentials': '凭证管理',
+                'verification-limits': '验证次数配置',
+                'permissions': '权限管理'
+            };
+            pageTitle.textContent = titles[pageId] || '管理后台';
+            
+            // 加载相应页面的数据
+            if (pageId === 'registrations') {
+                loadRegistrationsList();
+            } else if (pageId === 'companies') {
+                loadCompaniesList();
+            } else if (pageId === 'credentials') {
+                loadCredentialsList();
+            } else if (pageId === 'verification-limits') {
+                loadVerificationLimits();
+            } else if (pageId === 'permissions') {
+                loadUsersList();
+            }
+        }
+        
+        // 绑定导航栏点击事件
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const pageId = item.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+        
+        // 加载仪表板数据
+        async function loadDashboardData() {
+            try {
+                // 获取注册申请列表
+                const response = await fetch('/api/admin/registrations', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const registrations = await response.json();
+                    
+                    // 统计数据
+                    const pendingCount = registrations.filter(r => r.status === 'pending').length;
+                    const approvedCount = registrations.filter(r => r.status === 'approved').length;
+                    const rejectedCount = registrations.filter(r => r.status === 'rejected').length;
+                    const totalCount = registrations.length;
+                    
+                    // 更新统计数据显示
+                    document.getElementById('pending-count').textContent = pendingCount;
+                    document.getElementById('approved-count').textContent = approvedCount;
+                    document.getElementById('rejected-count').textContent = rejectedCount;
+                    document.getElementById('total-count').textContent = totalCount;
+                }
+            } catch (error) {
+                console.error('加载仪表板数据失败:', error);
+            }
+        }
+        
+        // 加载待审核企业列表
+        async function loadPendingList() {
+            const pendingList = document.getElementById('pending-list');
+            pendingList.innerHTML = '<div class="loading-spinner"></div>加载中...';
+            
+            try {
+                const response = await fetch('/api/admin/registrations', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const registrations = await response.json();
+                    const pendingRegistrations = registrations.filter(r => r.status === 'pending').slice(0, 5);
+                    
+                    if (pendingRegistrations.length === 0) {
+                        pendingList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">暂无待审核企业</p>';
+                    } else {
+                        let html = `
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>企业名称</th>
+                                        <th>联系人</th>
+                                        <th>联系方式</th>
+                                        <th>提交时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        
+                        pendingRegistrations.forEach(item => {
+                            const submitTime = new Date(item.created_at).toLocaleString('zh-CN');
+                            html += `
+                                <tr>
+                                    <td>${item.company_name}</td>
+                                    <td>${item.contact_person}</td>
+                                    <td>${item.phone}</td>
+                                    <td>${submitTime}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-success btn-sm" onclick="approveRegistration('${item.id}')">通过</button>
+                                            <button class="btn btn-danger btn-sm" onclick="rejectRegistration('${item.id}')">拒绝</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += '</tbody></table>';
+                        pendingList.innerHTML = html;
+                    }
+                }
+            } catch (error) {
+                console.error('加载待审核列表失败:', error);
+                pendingList.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">加载失败，请重试</p>';
+            }
+        }
+        
+        // 加载所有注册申请列表
+        async function loadRegistrationsList() {
+            const registrationsList = document.getElementById('registrations-list');
+            registrationsList.innerHTML = '<div class="loading-spinner"></div>加载中...';
+            
+            try {
+                const response = await fetch('/api/admin/registrations', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const registrations = await response.json();
+                    
+                    if (registrations.length === 0) {
+                        registrationsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">暂无注册申请</p>';
+                    } else {
+                        let html = `
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>企业名称</th>
+                                        <th>企业ID</th>
+                                        <th>联系人</th>
+                                        <th>联系方式</th>
+                                        <th>状态</th>
+                                        <th>提交时间</th>
+                                        <th>操作时间</th>
+                                        <th>操作人</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        
+                        registrations.forEach(item => {
+                            const submitTime = new Date(item.created_at).toLocaleString('zh-CN');
+                            const reviewTime = item.reviewed_at ? new Date(item.reviewed_at).toLocaleString('zh-CN') : '-';
+                            const reviewer = item.reviewed_by || '-';
+                            
+                            let statusBadge = '';
+                            if (item.status === 'pending') {
+                                statusBadge = '<span class="status-badge pending">待审核</span>';
+                            } else if (item.status === 'approved') {
+                                statusBadge = '<span class="status-badge approved">已通过</span>';
+                            } else if (item.status === 'rejected') {
+                                statusBadge = '<span class="status-badge rejected">已拒绝</span>';
+                            }
+                            
+                            let actions = '';
+                            if (item.status === 'pending') {
+                                actions = `
+                                    <div class="action-buttons">
+                                        <button class="btn btn-success btn-sm" onclick="approveRegistration('${item.id}')">通过</button>
+                                        <button class="btn btn-danger btn-sm" onclick="rejectRegistration('${item.id}')">拒绝</button>
+                                    </div>
+                                `;
+                            }
+                            
+                            html += `
+                                <tr>
+                                    <td>${item.company_name}</td>
+                                    <td>${item.company_id}</td>
+                                    <td>${item.contact_person}</td>
+                                    <td>${item.phone}</td>
+                                    <td>${statusBadge}</td>
+                                    <td>${submitTime}</td>
+                                    <td>${reviewTime}</td>
+                                    <td>${reviewer}</td>
+                                    <td>${actions}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += '</tbody></table>';
+                        registrationsList.innerHTML = html;
+                    }
+                }
+            } catch (error) {
+                console.error('加载注册申请列表失败:', error);
+                registrationsList.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">加载失败，请重试</p>';
+            }
+        }
+        
+        // 批准注册申请
+        async function approveRegistration(id) {
+            if (confirm('确定要批准该企业注册申请吗？')) {
+                try {
+                    // 显示加载状态
+                    showLoading();
+                    
+                    // 调用API更新状态
+                    const response = await fetch(`/api/admin/registrations/${id}/approve`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || '批准失败');
+                    }
+                    
+                    alert('批准成功！');
+                    
+                    // 重新加载数据
+                    loadDashboardData();
+                    loadPendingList();
+                    if (document.getElementById('registrations-content').style.display !== 'none') {
+                        loadRegistrationsList();
+                    }
+                } catch (error) {
+                    console.error('批准注册申请失败:', error);
+                    alert('操作失败: ' + error.message);
+                } finally {
+                    hideLoading();
+                }
+            }
+        }
+        
+        // 拒绝注册申请
+        async function rejectRegistration(id) {
+            const reason = prompt('请输入拒绝原因：');
+            if (reason) {
+                try {
+                    // 显示加载状态
+                    showLoading();
+                    
+                    // 调用API更新状态
+                    const response = await fetch(`/api/admin/registrations/${id}/reject`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ reason })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || '拒绝失败');
+                    }
+                    
+                    alert('拒绝成功！');
+                    
+                    // 重新加载数据
+                    loadDashboardData();
+                    loadPendingList();
+                    if (document.getElementById('registrations-content').style.display !== 'none') {
+                        loadRegistrationsList();
+                    }
+                } catch (error) {
+                    console.error('拒绝注册申请失败:', error);
+                    alert('操作失败: ' + error.message);
+                } finally {
+                    hideLoading();
+                }
+            }
+        }
+        
+        // 显示加载状态
+        function showLoading() {
+            const loading = document.createElement('div');
+            loading.id = 'global-loading';
+            loading.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                font-size: 18px;
+                color: white;
+            `;
+            loading.innerHTML = `<div><div class="loading-spinner" style="width: 40px; height: 40px; margin-right: 15px;"></div>处理中...</div>`;
+            document.body.appendChild(loading);
+        }
+        
+        // 隐藏加载状态
+        function hideLoading() {
+            const loading = document.getElementById('global-loading');
+            if (loading) {
+                loading.remove();
+            }
+        }
+        
+        // 验证次数配置相关功能
+        async function loadVerificationLimits() {
+            try {
+                // 模拟加载统计数据
+                document.getElementById('today-verifications').textContent = Math.floor(Math.random() * 1000);
+                document.getElementById('month-verifications').textContent = Math.floor(Math.random() * 10000);
+                document.getElementById('limit-exceeded').textContent = Math.floor(Math.random() * 100);
+                
+                // 从本地存储加载设置
+                const savedSettings = localStorage.getItem('verificationSettings');
+                if (savedSettings) {
+                    try {
+                        const settings = JSON.parse(savedSettings);
+                        document.getElementById('max-verifications').value = settings.maxVerifications || '';
+                        document.getElementById('verification-window').value = settings.verificationWindow || '';
+                        document.getElementById('enable-notifications').checked = settings.enableNotifications || false;
+                    } catch (e) {
+                        console.error('加载验证设置失败:', e);
+                    }
+                }
+            } catch (error) {
+                console.error('加载验证统计数据失败:', error);
+            }
+        }
+        
+        // 保存验证次数配置
+        if (document.getElementById('save-limits-btn')) {
+            document.getElementById('save-limits-btn').addEventListener('click', async () => {
+                try {
+                    const maxVerifications = document.getElementById('max-verifications').value;
+                    const verificationWindow = document.getElementById('verification-window').value;
+                    const enableNotifications = document.getElementById('enable-notifications').checked;
+                    
+                    // 简单验证
+                    if (!maxVerifications || !verificationWindow) {
+                        showMessage('请填写所有必填字段', 'error');
+                        return;
+                    }
+                    
+                    // 保存配置
+                    const settings = {
+                        maxVerifications: parseInt(maxVerifications),
+                        verificationWindow: parseInt(verificationWindow),
+                        enableNotifications: enableNotifications
+                    };
+                    
+                    // 模拟保存到本地存储
+                    localStorage.setItem('verificationSettings', JSON.stringify(settings));
+                    
+                    // 显示成功消息
+                    showMessage('配置保存成功', 'success');
+                } catch (error) {
+                    console.error('保存验证设置失败:', error);
+                    showMessage('保存失败，请重试', 'error');
+                }
+            });
+        }
+        
+        // 权限管理相关功能
+        async function loadUsersList() {
+            try {
+                const tableBody = document.querySelector('#users-table tbody');
+                if (!tableBody) return;
+                
+                // 模拟用户数据
+                const users = [
+                    {
+                        username: 'admin',
+                        email: 'admin@example.com',
+                        role: '管理员',
+                        createdAt: '2023-01-15',
+                        status: 'active'
+                    },
+                    {
+                        username: 'operator1',
+                        email: 'operator1@example.com',
+                        role: '操作员',
+                        createdAt: '2023-02-20',
+                        status: 'active'
+                    },
+                    {
+                        username: 'viewer1',
+                        email: 'viewer1@example.com',
+                        role: '查看者',
+                        createdAt: '2023-03-10',
+                        status: 'inactive'
+                    }
+                ];
+                
+                // 清空表格
+                tableBody.innerHTML = '';
+                
+                // 填充表格数据
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.createdAt}</td>
+                        <td>
+                            <span class="status-badge ${user.status === 'active' ? 'active' : 'inactive'}">
+                                ${user.status === 'active' ? '启用' : '禁用'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="editUser('${user.username}')">编辑</button>
+                                <button class="btn btn-warning btn-sm" onclick="toggleUserStatus('${user.username}', '${user.status}')">
+                                    ${user.status === 'active' ? '禁用' : '启用'}
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.username}')">删除</button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('加载用户列表失败:', error);
+            }
+        }
+        
+        // 添加用户按钮事件
+        if (document.getElementById('add-user-btn')) {
+            document.getElementById('add-user-btn').addEventListener('click', function() {
+                alert('添加用户功能已触发，在实际应用中应显示添加用户表单');
+            });
+        }
+        
+        // 编辑用户（全局函数）
+        window.editUser = function(username) {
+            alert(`编辑用户 ${username}，在实际应用中应显示编辑用户表单`);
+        };
+        
+        // 删除用户（全局函数）
+        window.deleteUser = function(username) {
+            if (confirm(`确定要删除用户 ${username} 吗？`)) {
+                // 在实际应用中，这里应该调用API删除用户
+                showMessage('用户删除成功', 'success');
+                loadUsersList(); // 重新加载用户列表
+            }
+        };
+        
+        // 切换用户状态（全局函数）
+        window.toggleUserStatus = function(username, status) {
+            const newStatus = status === 'active' ? 'inactive' : 'active';
+            const statusText = newStatus === 'active' ? '启用' : '禁用';
+            
+            if (confirm(`确定要${statusText}用户 ${username} 吗？`)) {
+                // 在实际应用中，这里应该调用API切换用户状态
+                showMessage(`用户已${statusText}`, 'success');
+                loadUsersList(); // 重新加载用户列表
+            }
+        };
+        
+        // 登出按钮事件处理
+        logoutBtn.addEventListener('click', async () => {
+            if (confirm('确定要退出登录吗？')) {
+                try {
+                    // 清除本地存储
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminInfo');
+                    
+                    // 跳转到登录页面
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('退出登录失败:', error);
+                }
+            }
+        });
+        
+
+        
+        // 企业管理相关功能
+        async function loadCompaniesList() {
+            const companiesList = document.getElementById('companies-list');
+            companiesList.innerHTML = '<div class="loading-spinner"></div>加载中...';
+            
+            try {
+                // 模拟数据
+                const mockCompanies = [
+                    { id: '1', name: '你是谁公司', status: 'active', createTime: '2024-01-15 10:30:00', verifiedCount: 156 },
+                    { id: '2', name: '科技有限公司', status: 'active', createTime: '2024-01-10 14:20:00', verifiedCount: 89 },
+                    { id: '3', name: '创意工作室', status: 'inactive', createTime: '2024-01-05 09:45:00', verifiedCount: 42 }
+                ];
+                
+                let html = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>企业ID</th>
+                                <th>企业名称</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>验证次数</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                mockCompanies.forEach(company => {
+                    const statusBadge = company.status === 'active' 
+                        ? '<span class="status-badge approved">已激活</span>'
+                        : '<span class="status-badge pending">未激活</span>';
+                    
+                    html += `
+                        <tr>
+                            <td>${company.id}</td>
+                            <td>${company.name}</td>
+                            <td>${statusBadge}</td>
+                            <td>${company.createTime}</td>
+                            <td>${company.verifiedCount}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm" onclick="viewCompanyDetails('${company.id}')">查看详情</button>
+                                    <button class="btn ${company.status === 'active' ? 'btn-danger' : 'btn-success'} btn-sm" 
+                                            onclick="${company.status === 'active' ? 'deactivateCompany' : 'activateCompany'}('${company.id}')">
+                                        ${company.status === 'active' ? '停用' : '激活'}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                companiesList.innerHTML = html;
+            } catch (error) {
+                console.error('加载企业列表失败:', error);
+                companiesList.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">加载失败，请重试</p>';
+            }
+        }
+        
+        function searchCompanies() {
+            const searchTerm = document.getElementById('company-search').value.toLowerCase();
+            const companiesList = document.getElementById('companies-list');
+            
+            // 模拟搜索功能
+            companiesList.innerHTML = '<div class="loading-spinner"></div>搜索中...';
+            
+            setTimeout(() => {
+                // 模拟搜索结果
+                const mockCompanies = [
+                    { id: '1', name: '你是谁公司', status: 'active', createTime: '2024-01-15 10:30:00', verifiedCount: 156 }
+                ].filter(c => c.name.toLowerCase().includes(searchTerm));
+                
+                if (mockCompanies.length === 0) {
+                    companiesList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">未找到匹配的企业</p>';
+                    return;
+                }
+                
+                let html = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>企业ID</th>
+                                <th>企业名称</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>验证次数</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                mockCompanies.forEach(company => {
+                    const statusBadge = company.status === 'active' 
+                        ? '<span class="status-badge approved">已激活</span>'
+                        : '<span class="status-badge pending">未激活</span>';
+                    
+                    html += `
+                        <tr>
+                            <td>${company.id}</td>
+                            <td>${company.name}</td>
+                            <td>${statusBadge}</td>
+                            <td>${company.createTime}</td>
+                            <td>${company.verifiedCount}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm" onclick="viewCompanyDetails('${company.id}')">查看详情</button>
+                                    <button class="btn ${company.status === 'active' ? 'btn-danger' : 'btn-success'} btn-sm" 
+                                            onclick="${company.status === 'active' ? 'deactivateCompany' : 'activateCompany'}('${company.id}')">
+                                        ${company.status === 'active' ? '停用' : '激活'}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                companiesList.innerHTML = html;
+            }, 500);
+        }
+        
+        function viewCompanyDetails(companyId) {
+            alert(`查看企业ID: ${companyId} 的详情`);
+            // 这里可以实现查看企业详情的逻辑
+        }
+        
+        function activateCompany(companyId) {
+            if (confirm('确定要激活该企业吗？')) {
+                alert(`企业ID: ${companyId} 已激活`);
+                loadCompaniesList();
+            }
+        }
+        
+        function deactivateCompany(companyId) {
+            if (confirm('确定要停用该企业吗？停用后将无法使用系统功能。')) {
+                alert(`企业ID: ${companyId} 已停用`);
+                loadCompaniesList();
+            }
+        }
+        
+        // 凭证管理相关功能
+        async function loadCredentialsList() {
+            const credentialsList = document.getElementById('credentials-list');
+            const companySelect = document.getElementById('credentials-company');
+            
+            credentialsList.innerHTML = '<div class="loading-spinner"></div>加载中...';
+            
+            // 加载企业下拉列表
+            companySelect.innerHTML = '<option value="">所有企业</option>';
+            const mockCompanies = [
+                { id: '1', name: '你是谁公司' },
+                { id: '2', name: '科技有限公司' }
+            ];
+            
+            mockCompanies.forEach(company => {
+                companySelect.innerHTML += `<option value="${company.id}">${company.name}</option>`;
+            });
+            
+            try {
+                // 模拟数据
+                const mockCredentials = [
+                    { id: 'cred-001', companyId: '1', companyName: '你是谁公司', name: '张三', title: '技术总监', issueDate: '2024-01-15', expireDate: '2025-01-15', status: 'active' },
+                    { id: 'cred-002', companyId: '1', companyName: '你是谁公司', name: '李四', title: '产品经理', issueDate: '2024-01-10', expireDate: '2025-01-10', status: 'active' },
+                    { id: 'cred-003', companyId: '2', companyName: '科技有限公司', name: '王五', title: '设计师', issueDate: '2024-01-05', expireDate: '2025-01-05', status: 'expired' }
+                ];
+                
+                renderCredentialsTable(mockCredentials);
+            } catch (error) {
+                console.error('加载凭证列表失败:', error);
+                credentialsList.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">加载失败，请重试</p>';
+            }
+        }
+        
+        function renderCredentialsTable(credentials) {
+            const credentialsList = document.getElementById('credentials-list');
+            
+            if (credentials.length === 0) {
+                credentialsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">暂无凭证数据</p>';
+                return;
+            }
+            
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>凭证ID</th>
+                            <th>所属企业</th>
+                            <th>姓名</th>
+                            <th>职位</th>
+                            <th>签发日期</th>
+                            <th>过期日期</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            credentials.forEach(credential => {
+                let statusBadge = '';
+                if (credential.status === 'active') {
+                    statusBadge = '<span class="status-badge approved">有效</span>';
+                } else if (credential.status === 'expired') {
+                    statusBadge = '<span class="status-badge rejected">已过期</span>';
+                } else {
+                    statusBadge = '<span class="status-badge pending">待激活</span>';
+                }
+                
+                html += `
+                    <tr>
+                        <td>${credential.id}</td>
+                        <td>${credential.companyName}</td>
+                        <td>${credential.name}</td>
+                        <td>${credential.title}</td>
+                        <td>${credential.issueDate}</td>
+                        <td>${credential.expireDate}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="viewCredentialDetails('${credential.id}')">查看详情</button>
+                                <button class="btn btn-danger btn-sm" onclick="revokeCredential('${credential.id}')">撤销</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            credentialsList.innerHTML = html;
+        }
+        
+        function searchCredentials() {
+            const companyId = document.getElementById('credentials-company').value;
+            const searchTerm = document.getElementById('credentials-search').value.toLowerCase();
+            const credentialsList = document.getElementById('credentials-list');
+            
+            credentialsList.innerHTML = '<div class="loading-spinner"></div>搜索中...';
+            
+            setTimeout(() => {
+                // 模拟搜索结果
+                const mockCredentials = [
+                    { id: 'cred-001', companyId: '1', companyName: '你是谁公司', name: '张三', title: '技术总监', issueDate: '2024-01-15', expireDate: '2025-01-15', status: 'active' },
+                    { id: 'cred-002', companyId: '1', companyName: '你是谁公司', name: '李四', title: '产品经理', issueDate: '2024-01-10', expireDate: '2025-01-10', status: 'active' }
+                ].filter(cred => 
+                    (companyId ? cred.companyId === companyId : true) &&
+                    (cred.id.toLowerCase().includes(searchTerm) || 
+                     cred.name.toLowerCase().includes(searchTerm))
+                );
+                
+                renderCredentialsTable(mockCredentials);
+            }, 500);
+        }
+        
+        function viewCredentialDetails(credentialId) {
+            alert(`查看凭证ID: ${credentialId} 的详情`);
+        }
+        
+        function revokeCredential(credentialId) {
+            if (confirm('确定要撤销该凭证吗？撤销后将无法使用。')) {
+                alert(`凭证ID: ${credentialId} 已撤销`);
+                loadCredentialsList();
+            }
+        }
+        
+
+    </script>
+</body>
+</html>
