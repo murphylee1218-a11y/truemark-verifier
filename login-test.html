@@ -82,12 +82,12 @@
             log(`企业ID: ${companyId}, 密码: ${password.replace(/./g, '*')}`);
             
             try {
-                log('尝试直接连接Node.js服务器...');
-                log('请求URL: http://localhost:3000/api/auth/login');
+                log('尝试直接连接服务器...');
+                log('请求URL: /api/auth/login');
                 
                 // 先测试简单的GET请求，检查连接性
                 log('测试连接性 - 发送GET请求到检查测试账户端点...');
-                const checkResponse = await fetch('http://localhost:3000/api/check-test-account');
+                const checkResponse = await fetch('/api/check-test-account');
                 log(`连接性测试响应状态: ${checkResponse.status}`);
                 
                 if (!checkResponse.ok) {
@@ -101,7 +101,7 @@
                 
                 // 发送实际的登录请求
                 log('发送登录请求...');
-                const response = await fetch('http://localhost:3000/api/auth/login', {
+                const response = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

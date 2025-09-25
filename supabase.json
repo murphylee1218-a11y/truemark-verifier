@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "index": {
+      "localPort": 54321,
+      "env": [
+        "SUPABASE_URL=https://ryvpfeidqdsrukfzwbmf.supabase.co",
+        "SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dnBmZWlkcWRzcnVrZnp3Ym1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2ODEwNzAsImV4cCI6MjA3NDI1NzA3MH0.dRw-hjqnNfKpYwzmfX3JkTGUl__w82jApdkU-Pyy6ZE",
+        "JWT_SECRET=test-secret-key-for-development-only-this-should-be-in-env-in-production"
+      ]
+    }
+  }
+}
